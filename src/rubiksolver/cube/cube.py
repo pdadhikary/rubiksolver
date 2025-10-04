@@ -179,6 +179,14 @@ class RubiksCube:
             return False
         return False
 
+    def reset(self) -> None:
+        self.state = [CubeLabel.UNLABELD for _ in range(self.numFacelets)]
+        for cube_face in CubeFace:
+            center_idx = (cube_face.value * 9) + CubePosition.FIVE.value
+            self.state[center_idx] = CubeLabel(cube_face.value)
+
+        self.solution: str | None = None
+
     def rotateFrontCW(self) -> None:
         self._rotateFaceCW(CubeFace.FRONT)
 

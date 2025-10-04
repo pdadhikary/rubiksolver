@@ -6,7 +6,7 @@ import pyrr
 from OpenGL.GL.shaders import ShaderProgram, compileProgram, compileShader
 from PySide6.QtCore import QElapsedTimer, Qt, QTimer, Slot
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QPushButton, QSlider, QWidget
 
 from rubiksolver.cube import CubeLabel
 from rubiksolver.cube.cube import CubeFace
@@ -41,11 +41,29 @@ class Cube3DViewerWidget(QWidget):
         self.cameraRollSlider.valueChanged.connect(self.cubeWidget.setCameraRoll)
         self.cameraYawSlider.valueChanged.connect(self.cubeWidget.setCameraYaw)
 
+        self.nextButton = QPushButton("Next")
+        self.prevButton = QPushButton("Previous")
+        self.playButton = QPushButton("Play")
+        self.resetButton = QPushButton("Reset")
+
+        self.nextButton.setDisabled(True)
+        self.prevButton.setDisabled(True)
+        self.playButton.setDisabled(True)
+
+        buttonContainer = QWidget()
+        self.buttonLayout = QHBoxLayout(buttonContainer)
+
+        self.buttonLayout.addWidget(self.nextButton)
+        self.buttonLayout.addWidget(self.prevButton)
+        self.buttonLayout.addWidget(self.playButton)
+        self.buttonLayout.addWidget(self.resetButton)
+
         layout = QGridLayout(self)
         layout.addWidget(self.cameraPitchSlider, 1, 0)
         layout.addWidget(self.cameraRollSlider, 0, 1)
         layout.addWidget(self.cameraYawSlider, 2, 1)
         layout.addWidget(self.cubeWidget, 1, 1)
+        layout.addWidget(buttonContainer, 3, 0, 1, 2)
 
     def cleanup(self):
         self.cubeWidget.cleanup()

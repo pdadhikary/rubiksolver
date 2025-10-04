@@ -1,5 +1,5 @@
 import cv2 as cv
-from PySide6.QtCore import QSize, QThread, Signal
+from PySide6.QtCore import QSize, QThread, Signal, Slot
 from PySide6.QtGui import QImage, QPixmap, Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QMainWindow, QSizePolicy, QWidget
 
@@ -108,6 +108,11 @@ class CubeDetectionAppWindow(QMainWindow):
             self.cubeDetectionWorker.setHomographyRANSACMaxError
         )
 
+        self.cubeViewer.playButton.pressed.connect(self.playPressed)
+        self.cubeViewer.nextButton.pressed.connect(self.nextPressed)
+        self.cubeViewer.prevButton.pressed.connect(self.prevPressed)
+        self.cubeViewer.resetButton.pressed.connect(self.resetPressed)
+
         container = QWidget(self)
         self.setCentralWidget(container)
         layout = QGridLayout(container)
@@ -185,4 +190,30 @@ class CubeDetectionAppWindow(QMainWindow):
             self.cube.setFaceletLabel(Facelet(face, positon), result.labels[i])
 
             if self.cube.isComplete():
-                self.PauseSignal.emit()
+                self.onScanComplete()
+
+    def onScanComplete(self):
+        self.PauseSignal.emit()
+        self.cubeViewer.playButton.setEnabled(True)
+        self.cubeViewer.nextButton.setEnabled(True)
+        self.cubeViewer.prevButton.setEnabled(True)
+
+    @Slot()
+    def playPressed(self):
+        # TODO: Implement animation autoplay
+        pass
+
+    @Slot()
+    def nextPressed(self):
+        # TODO: Implement animation step forward
+        pass
+
+    @Slot()
+    def prevPressed(self):
+        # TODO: Implement animation step back
+        pass
+
+    @Slot()
+    def resetPressed(self):
+        self.ResumeSignal.emit()
+        self.cube.reset()
