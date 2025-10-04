@@ -358,6 +358,18 @@ class CubeDetectionPipeline:
 
         return results
 
+    def getFinishedFrame(self, frame: MatLike) -> MatLike:
+        text = "Cube Scan Complete."
+        font = cv.FONT_HERSHEY_SIMPLEX
+        scale = 1
+        thickness = 2
+        color = (255, 255, 255)
+        (text_w, text_h), _ = cv.getTextSize(text, font, scale, thickness)
+        x = (frame.shape[0] - text_w) // 2
+        y = (frame.shape[1] + text_h) // 2
+        cv.putText(frame, text, (x, y), font, scale, color, thickness, cv.LINE_AA)
+        return frame
+
     @staticmethod
     def homographyGrid() -> np.ndarray:
         return np.array(

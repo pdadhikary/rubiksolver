@@ -1,6 +1,7 @@
 import time
 
 import cv2 as cv
+import numpy as np
 from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtWidgets import QApplication
 
@@ -18,6 +19,7 @@ class CubeDectionWorker(QObject):
     def __init__(self):
         super().__init__()
         self.running = False
+        self.pausePipeline = False
         self.parameters = CubeDetectionParameters()
         self.pipeline = CubeDetectionPipeline(
             FixedColorClassificationModel(), self.parameters
@@ -40,8 +42,21 @@ class CubeDectionWorker(QObject):
                 self.stop()
                 break
 
-            self.pipeline.forward(frame)
-            result = self.pipeline.result()
+            if self.pausePipeline:
+                completeFrame = np.zeros_like(frame, dtype=np.uint8)
+                result = CubeDetectionResult(
+                    frame,
+                    self.pipeline.getFinishedFrame(completeFrame),
+                    0,
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                )
+            else:
+                self.pipeline.forward(frame)
+                result = self.pipeline.result()
 
             self.dataReady.emit(result)
             QApplication.processEvents()
@@ -51,6 +66,12 @@ class CubeDectionWorker(QObject):
 
     def stop(self):
         self.running = False
+
+    def pause(self):
+        self.pausePipeline = True
+
+    def resume(self):
+        self.pausePipeline = False
 
     @Slot(int)
     def setDenoiseDiameter(self, value: int) -> None:

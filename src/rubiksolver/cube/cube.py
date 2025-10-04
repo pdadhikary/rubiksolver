@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
+import kociemba
+
 
 class CubeFace(Enum):
     UP = 0
@@ -163,6 +165,19 @@ class RubiksCube:
         for cube_face in CubeFace:
             center_idx = (cube_face.value * 9) + CubePosition.FIVE.value
             self.state[center_idx] = CubeLabel(cube_face.value)
+
+        self.solution: str | None = None
+
+    def isComplete(self) -> bool:
+        try:
+            if CubeLabel.UNLABELD not in self.state:
+                solution = kociemba.solve(str(self))
+                if isinstance(solution, str):
+                    self.solution = solution
+                    return True
+        except ValueError:
+            return False
+        return False
 
     def rotateFrontCW(self) -> None:
         self._rotateFaceCW(CubeFace.FRONT)

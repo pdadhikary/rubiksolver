@@ -1,5 +1,5 @@
 import cv2 as cv
-from PySide6.QtCore import QSize, QThread
+from PySide6.QtCore import QSize, QThread, Signal
 from PySide6.QtGui import QImage, QPixmap, Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QMainWindow, QSizePolicy, QWidget
 
@@ -11,6 +11,9 @@ from .workers import CubeDectionWorker
 
 
 class CubeDetectionAppWindow(QMainWindow):
+    PauseSignal = Signal()
+    ResumeSignal = Signal()
+
     def __init__(self):
         super().__init__()
         self.cube = RubiksCube()
@@ -24,6 +27,8 @@ class CubeDetectionAppWindow(QMainWindow):
         self.cubeDetectionWorker.moveToThread(self.cubeDetectionThread)
         self.cubeDetectionWorker.dataReady.connect(self.showResults)
         self.cubeDetectionThread.started.connect(self.cubeDetectionWorker.run)
+        self.PauseSignal.connect(self.cubeDetectionWorker.pause)
+        self.ResumeSignal.connect(self.cubeDetectionWorker.resume)
 
     def setup(self):
         self.photoLabel1 = QLabel()
@@ -155,14 +160,14 @@ class CubeDetectionAppWindow(QMainWindow):
 
         self.photoLabel1.setPixmap(
             QPixmap.fromImage(frame_image).scaled(
-                self.videoSize,
+                self.photoLabel1.size(),
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation,
             )
         )
         self.photoLabel2.setPixmap(
             QPixmap.fromImage(edges_image).scaled(
-                self.videoSize,
+                self.photoLabel2.size(),
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation,
             )
@@ -178,3 +183,6 @@ class CubeDetectionAppWindow(QMainWindow):
                 continue
             positon = CubePosition(i)
             self.cube.setFaceletLabel(Facelet(face, positon), result.labels[i])
+
+            if self.cube.isComplete():
+                self.PauseSignal.emit()
