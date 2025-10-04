@@ -1,12 +1,6 @@
 import pytest
 
-from rubiksolver.cube import (
-    CubeFace,
-    CubeLabel,
-    CubePositon,
-    Facelet,
-    RubiksCube,
-)
+from rubiksolver.cube import CubeFace, CubeLabel, CubePosition, Facelet, RubiksCube
 
 
 @pytest.fixture
@@ -19,7 +13,7 @@ def cube_initalized() -> RubiksCube:
     obj = RubiksCube()
 
     for face in CubeFace:
-        for position in CubePositon:
+        for position in CubePosition:
             obj.setFaceletLabel(Facelet(face, position), CubeLabel(face.value))
 
     return obj
@@ -28,60 +22,60 @@ def cube_initalized() -> RubiksCube:
 @pytest.mark.parametrize(
     "facelet, expected",
     [
-        (Facelet(CubeFace.UP, CubePositon.ONE), 0),
-        (Facelet(CubeFace.UP, CubePositon.TWO), 1),
-        (Facelet(CubeFace.UP, CubePositon.THREE), 2),
-        (Facelet(CubeFace.UP, CubePositon.FOUR), 3),
-        (Facelet(CubeFace.UP, CubePositon.FIVE), 4),
-        (Facelet(CubeFace.UP, CubePositon.SIX), 5),
-        (Facelet(CubeFace.UP, CubePositon.SEVEN), 6),
-        (Facelet(CubeFace.UP, CubePositon.EIGHT), 7),
-        (Facelet(CubeFace.UP, CubePositon.NINE), 8),
-        (Facelet(CubeFace.RIGHT, CubePositon.ONE), 9),
-        (Facelet(CubeFace.RIGHT, CubePositon.TWO), 10),
-        (Facelet(CubeFace.RIGHT, CubePositon.THREE), 11),
-        (Facelet(CubeFace.RIGHT, CubePositon.FOUR), 12),
-        (Facelet(CubeFace.RIGHT, CubePositon.FIVE), 13),
-        (Facelet(CubeFace.RIGHT, CubePositon.SIX), 14),
-        (Facelet(CubeFace.RIGHT, CubePositon.SEVEN), 15),
-        (Facelet(CubeFace.RIGHT, CubePositon.EIGHT), 16),
-        (Facelet(CubeFace.RIGHT, CubePositon.NINE), 17),
-        (Facelet(CubeFace.FRONT, CubePositon.ONE), 18),
-        (Facelet(CubeFace.FRONT, CubePositon.TWO), 19),
-        (Facelet(CubeFace.FRONT, CubePositon.THREE), 20),
-        (Facelet(CubeFace.FRONT, CubePositon.FOUR), 21),
-        (Facelet(CubeFace.FRONT, CubePositon.FIVE), 22),
-        (Facelet(CubeFace.FRONT, CubePositon.SIX), 23),
-        (Facelet(CubeFace.FRONT, CubePositon.SEVEN), 24),
-        (Facelet(CubeFace.FRONT, CubePositon.EIGHT), 25),
-        (Facelet(CubeFace.FRONT, CubePositon.NINE), 26),
-        (Facelet(CubeFace.DOWN, CubePositon.ONE), 27),
-        (Facelet(CubeFace.DOWN, CubePositon.TWO), 28),
-        (Facelet(CubeFace.DOWN, CubePositon.THREE), 29),
-        (Facelet(CubeFace.DOWN, CubePositon.FOUR), 30),
-        (Facelet(CubeFace.DOWN, CubePositon.FIVE), 31),
-        (Facelet(CubeFace.DOWN, CubePositon.SIX), 32),
-        (Facelet(CubeFace.DOWN, CubePositon.SEVEN), 33),
-        (Facelet(CubeFace.DOWN, CubePositon.EIGHT), 34),
-        (Facelet(CubeFace.DOWN, CubePositon.NINE), 35),
-        (Facelet(CubeFace.LEFT, CubePositon.ONE), 36),
-        (Facelet(CubeFace.LEFT, CubePositon.TWO), 37),
-        (Facelet(CubeFace.LEFT, CubePositon.THREE), 38),
-        (Facelet(CubeFace.LEFT, CubePositon.FOUR), 39),
-        (Facelet(CubeFace.LEFT, CubePositon.FIVE), 40),
-        (Facelet(CubeFace.LEFT, CubePositon.SIX), 41),
-        (Facelet(CubeFace.LEFT, CubePositon.SEVEN), 42),
-        (Facelet(CubeFace.LEFT, CubePositon.EIGHT), 43),
-        (Facelet(CubeFace.LEFT, CubePositon.NINE), 44),
-        (Facelet(CubeFace.BACK, CubePositon.ONE), 45),
-        (Facelet(CubeFace.BACK, CubePositon.TWO), 46),
-        (Facelet(CubeFace.BACK, CubePositon.THREE), 47),
-        (Facelet(CubeFace.BACK, CubePositon.FOUR), 48),
-        (Facelet(CubeFace.BACK, CubePositon.FIVE), 49),
-        (Facelet(CubeFace.BACK, CubePositon.SIX), 50),
-        (Facelet(CubeFace.BACK, CubePositon.SEVEN), 51),
-        (Facelet(CubeFace.BACK, CubePositon.EIGHT), 52),
-        (Facelet(CubeFace.BACK, CubePositon.NINE), 53),
+        (Facelet(CubeFace.UP, CubePosition.ONE), 0),
+        (Facelet(CubeFace.UP, CubePosition.TWO), 1),
+        (Facelet(CubeFace.UP, CubePosition.THREE), 2),
+        (Facelet(CubeFace.UP, CubePosition.FOUR), 3),
+        (Facelet(CubeFace.UP, CubePosition.FIVE), 4),
+        (Facelet(CubeFace.UP, CubePosition.SIX), 5),
+        (Facelet(CubeFace.UP, CubePosition.SEVEN), 6),
+        (Facelet(CubeFace.UP, CubePosition.EIGHT), 7),
+        (Facelet(CubeFace.UP, CubePosition.NINE), 8),
+        (Facelet(CubeFace.RIGHT, CubePosition.ONE), 9),
+        (Facelet(CubeFace.RIGHT, CubePosition.TWO), 10),
+        (Facelet(CubeFace.RIGHT, CubePosition.THREE), 11),
+        (Facelet(CubeFace.RIGHT, CubePosition.FOUR), 12),
+        (Facelet(CubeFace.RIGHT, CubePosition.FIVE), 13),
+        (Facelet(CubeFace.RIGHT, CubePosition.SIX), 14),
+        (Facelet(CubeFace.RIGHT, CubePosition.SEVEN), 15),
+        (Facelet(CubeFace.RIGHT, CubePosition.EIGHT), 16),
+        (Facelet(CubeFace.RIGHT, CubePosition.NINE), 17),
+        (Facelet(CubeFace.FRONT, CubePosition.ONE), 18),
+        (Facelet(CubeFace.FRONT, CubePosition.TWO), 19),
+        (Facelet(CubeFace.FRONT, CubePosition.THREE), 20),
+        (Facelet(CubeFace.FRONT, CubePosition.FOUR), 21),
+        (Facelet(CubeFace.FRONT, CubePosition.FIVE), 22),
+        (Facelet(CubeFace.FRONT, CubePosition.SIX), 23),
+        (Facelet(CubeFace.FRONT, CubePosition.SEVEN), 24),
+        (Facelet(CubeFace.FRONT, CubePosition.EIGHT), 25),
+        (Facelet(CubeFace.FRONT, CubePosition.NINE), 26),
+        (Facelet(CubeFace.DOWN, CubePosition.ONE), 27),
+        (Facelet(CubeFace.DOWN, CubePosition.TWO), 28),
+        (Facelet(CubeFace.DOWN, CubePosition.THREE), 29),
+        (Facelet(CubeFace.DOWN, CubePosition.FOUR), 30),
+        (Facelet(CubeFace.DOWN, CubePosition.FIVE), 31),
+        (Facelet(CubeFace.DOWN, CubePosition.SIX), 32),
+        (Facelet(CubeFace.DOWN, CubePosition.SEVEN), 33),
+        (Facelet(CubeFace.DOWN, CubePosition.EIGHT), 34),
+        (Facelet(CubeFace.DOWN, CubePosition.NINE), 35),
+        (Facelet(CubeFace.LEFT, CubePosition.ONE), 36),
+        (Facelet(CubeFace.LEFT, CubePosition.TWO), 37),
+        (Facelet(CubeFace.LEFT, CubePosition.THREE), 38),
+        (Facelet(CubeFace.LEFT, CubePosition.FOUR), 39),
+        (Facelet(CubeFace.LEFT, CubePosition.FIVE), 40),
+        (Facelet(CubeFace.LEFT, CubePosition.SIX), 41),
+        (Facelet(CubeFace.LEFT, CubePosition.SEVEN), 42),
+        (Facelet(CubeFace.LEFT, CubePosition.EIGHT), 43),
+        (Facelet(CubeFace.LEFT, CubePosition.NINE), 44),
+        (Facelet(CubeFace.BACK, CubePosition.ONE), 45),
+        (Facelet(CubeFace.BACK, CubePosition.TWO), 46),
+        (Facelet(CubeFace.BACK, CubePosition.THREE), 47),
+        (Facelet(CubeFace.BACK, CubePosition.FOUR), 48),
+        (Facelet(CubeFace.BACK, CubePosition.FIVE), 49),
+        (Facelet(CubeFace.BACK, CubePosition.SIX), 50),
+        (Facelet(CubeFace.BACK, CubePosition.SEVEN), 51),
+        (Facelet(CubeFace.BACK, CubePosition.EIGHT), 52),
+        (Facelet(CubeFace.BACK, CubePosition.NINE), 53),
     ],
 )
 def test_FaceletToIndex(facelet, expected):
@@ -89,63 +83,36 @@ def test_FaceletToIndex(facelet, expected):
 
 
 def test_str(cube: RubiksCube):
-    assert str(cube) == (
-        "XXXXUXXXX" "XXXXRXXXX" "XXXXFXXXX" "XXXXDXXXX" "XXXXLXXXX" "XXXXBXXXX"
-    )
+    assert str(cube) == ("XXXXUXXXXXXXXRXXXXXXXXFXXXXXXXXDXXXXXXXXLXXXXXXXXBXXXX")
 
 
 @pytest.mark.parametrize(
     "facelet1, facelet2, expected",
     [
         (
-            Facelet(CubeFace.UP, CubePositon.FIVE),
-            Facelet(CubeFace.RIGHT, CubePositon.FIVE),
-            "XXXXRXXXX"
-            "XXXXUXXXX"
-            "XXXXFXXXX"
-            "XXXXDXXXX"
-            "XXXXLXXXX"
-            "XXXXBXXXX",
+            Facelet(CubeFace.UP, CubePosition.FIVE),
+            Facelet(CubeFace.RIGHT, CubePosition.FIVE),
+            "XXXXRXXXXXXXXUXXXXXXXXFXXXXXXXXDXXXXXXXXLXXXXXXXXBXXXX",
         ),
         (
-            Facelet(CubeFace.UP, CubePositon.FIVE),
-            Facelet(CubeFace.FRONT, CubePositon.FIVE),
-            "XXXXFXXXX"
-            "XXXXRXXXX"
-            "XXXXUXXXX"
-            "XXXXDXXXX"
-            "XXXXLXXXX"
-            "XXXXBXXXX",
+            Facelet(CubeFace.UP, CubePosition.FIVE),
+            Facelet(CubeFace.FRONT, CubePosition.FIVE),
+            "XXXXFXXXXXXXXRXXXXXXXXUXXXXXXXXDXXXXXXXXLXXXXXXXXBXXXX",
         ),
         (
-            Facelet(CubeFace.UP, CubePositon.FIVE),
-            Facelet(CubeFace.DOWN, CubePositon.FIVE),
-            "XXXXDXXXX"
-            "XXXXRXXXX"
-            "XXXXFXXXX"
-            "XXXXUXXXX"
-            "XXXXLXXXX"
-            "XXXXBXXXX",
+            Facelet(CubeFace.UP, CubePosition.FIVE),
+            Facelet(CubeFace.DOWN, CubePosition.FIVE),
+            "XXXXDXXXXXXXXRXXXXXXXXFXXXXXXXXUXXXXXXXXLXXXXXXXXBXXXX",
         ),
         (
-            Facelet(CubeFace.UP, CubePositon.FIVE),
-            Facelet(CubeFace.LEFT, CubePositon.FIVE),
-            "XXXXLXXXX"
-            "XXXXRXXXX"
-            "XXXXFXXXX"
-            "XXXXDXXXX"
-            "XXXXUXXXX"
-            "XXXXBXXXX",
+            Facelet(CubeFace.UP, CubePosition.FIVE),
+            Facelet(CubeFace.LEFT, CubePosition.FIVE),
+            "XXXXLXXXXXXXXRXXXXXXXXFXXXXXXXXDXXXXXXXXUXXXXXXXXBXXXX",
         ),
         (
-            Facelet(CubeFace.UP, CubePositon.FIVE),
-            Facelet(CubeFace.BACK, CubePositon.FIVE),
-            "XXXXBXXXX"
-            "XXXXRXXXX"
-            "XXXXFXXXX"
-            "XXXXDXXXX"
-            "XXXXLXXXX"
-            "XXXXUXXXX",
+            Facelet(CubeFace.UP, CubePosition.FIVE),
+            Facelet(CubeFace.BACK, CubePosition.FIVE),
+            "XXXXBXXXXXXXXRXXXXXXXXFXXXXXXXXDXXXXXXXXLXXXXXXXXUXXXX",
         ),
     ],
 )
@@ -161,184 +128,83 @@ def test_swapFacelets(
     [
         (
             ["rotateUpCW"],
-            "UUUUUUUUU"
-            "BBBRRRRRR"
-            "RRRFFFFFF"
-            "DDDDDDDDD"
-            "FFFLLLLLL"
-            "LLLBBBBBB",
+            "UUUUUUUUUBBBRRRRRRRRRFFFFFFDDDDDDDDDFFFLLLLLLLLLBBBBBB",
         ),
         (
             ["rotateUpCCW"],
-            "UUUUUUUUU"
-            "FFFRRRRRR"
-            "LLLFFFFFF"
-            "DDDDDDDDD"
-            "BBBLLLLLL"
-            "RRRBBBBBB",
+            "UUUUUUUUUFFFRRRRRRLLLFFFFFFDDDDDDDDDBBBLLLLLLRRRBBBBBB",
         ),
         (
             ["rotateUpCW", "rotateUpCCW"],
-            "UUUUUUUUU"
-            "RRRRRRRRR"
-            "FFFFFFFFF"
-            "DDDDDDDDD"
-            "LLLLLLLLL"
-            "BBBBBBBBB",
+            "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB",
         ),
         (
             ["rotateRightCW"],
-            "UUFUUFUUF"
-            "RRRRRRRRR"
-            "FFDFFDFFD"
-            "DDBDDBDDB"
-            "LLLLLLLLL"
-            "UBBUBBUBB",
+            "UUFUUFUUFRRRRRRRRRFFDFFDFFDDDBDDBDDBLLLLLLLLLUBBUBBUBB",
         ),
         (
             ["rotateRightCCW"],
-            "UUBUUBUUB"
-            "RRRRRRRRR"
-            "FFUFFUFFU"
-            "DDFDDFDDF"
-            "LLLLLLLLL"
-            "DBBDBBDBB",
+            "UUBUUBUUBRRRRRRRRRFFUFFUFFUDDFDDFDDFLLLLLLLLLDBBDBBDBB",
         ),
         (
             ["rotateRightCW", "rotateRightCCW"],
-            "UUUUUUUUU"
-            "RRRRRRRRR"
-            "FFFFFFFFF"
-            "DDDDDDDDD"
-            "LLLLLLLLL"
-            "BBBBBBBBB",
+            "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB",
         ),
         (
             ["rotateFrontCW"],
-            "UUUUUULLL"
-            "URRURRURR"
-            "FFFFFFFFF"
-            "RRRDDDDDD"
-            "LLDLLDLLD"
-            "BBBBBBBBB",
+            "UUUUUULLLURRURRURRFFFFFFFFFRRRDDDDDDLLDLLDLLDBBBBBBBBB",
         ),
         (
             ["rotateFrontCCW"],
-            "UUUUUURRR"
-            "DRRDRRDRR"
-            "FFFFFFFFF"
-            "LLLDDDDDD"
-            "LLULLULLU"
-            "BBBBBBBBB",
+            "UUUUUURRRDRRDRRDRRFFFFFFFFFLLLDDDDDDLLULLULLUBBBBBBBBB",
         ),
         (
             ["rotateFrontCW", "rotateFrontCCW"],
-            "UUUUUUUUU"
-            "RRRRRRRRR"
-            "FFFFFFFFF"
-            "DDDDDDDDD"
-            "LLLLLLLLL"
-            "BBBBBBBBB",
+            "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB",
         ),
         (
             ["rotateDownCW"],
-            "UUUUUUUUU"
-            "RRRRRRFFF"
-            "FFFFFFLLL"
-            "DDDDDDDDD"
-            "LLLLLLBBB"
-            "BBBBBBRRR",
+            "UUUUUUUUURRRRRRFFFFFFFFFLLLDDDDDDDDDLLLLLLBBBBBBBBBRRR",
         ),
         (
             ["rotateDownCCW"],
-            "UUUUUUUUU"
-            "RRRRRRBBB"
-            "FFFFFFRRR"
-            "DDDDDDDDD"
-            "LLLLLLFFF"
-            "BBBBBBLLL",
+            "UUUUUUUUURRRRRRBBBFFFFFFRRRDDDDDDDDDLLLLLLFFFBBBBBBLLL",
         ),
         (
             ["rotateDownCW", "rotateDownCCW"],
-            "UUUUUUUUU"
-            "RRRRRRRRR"
-            "FFFFFFFFF"
-            "DDDDDDDDD"
-            "LLLLLLLLL"
-            "BBBBBBBBB",
+            "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB",
         ),
         (
             ["rotateLeftCW"],
-            "BUUBUUBUU"
-            "RRRRRRRRR"
-            "UFFUFFUFF"
-            "FDDFDDFDD"
-            "LLLLLLLLL"
-            "BBDBBDBBD",
+            "BUUBUUBUURRRRRRRRRUFFUFFUFFFDDFDDFDDLLLLLLLLLBBDBBDBBD",
         ),
         (
             ["rotateLeftCCW"],
-            "FUUFUUFUU"
-            "RRRRRRRRR"
-            "DFFDFFDFF"
-            "BDDBDDBDD"
-            "LLLLLLLLL"
-            "BBUBBUBBU",
+            "FUUFUUFUURRRRRRRRRDFFDFFDFFBDDBDDBDDLLLLLLLLLBBUBBUBBU",
         ),
         (
             ["rotateLeftCW", "rotateLeftCCW"],
-            "UUUUUUUUU"
-            "RRRRRRRRR"
-            "FFFFFFFFF"
-            "DDDDDDDDD"
-            "LLLLLLLLL"
-            "BBBBBBBBB",
+            "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB",
         ),
         (
             ["rotateBackCW"],
-            "RRRUUUUUU"
-            "RRDRRDRRD"
-            "FFFFFFFFF"
-            "DDDDDDLLL"
-            "ULLULLULL"
-            "BBBBBBBBB",
+            "RRRUUUUUURRDRRDRRDFFFFFFFFFDDDDDDLLLULLULLULLBBBBBBBBB",
         ),
         (
             ["rotateBackCCW"],
-            "LLLUUUUUU"
-            "RRURRURRU"
-            "FFFFFFFFF"
-            "DDDDDDRRR"
-            "DLLDLLDLL"
-            "BBBBBBBBB",
+            "LLLUUUUUURRURRURRUFFFFFFFFFDDDDDDRRRDLLDLLDLLBBBBBBBBB",
         ),
         (
             ["rotateBackCW", "rotateBackCCW"],
-            "UUUUUUUUU"
-            "RRRRRRRRR"
-            "FFFFFFFFF"
-            "DDDDDDDDD"
-            "LLLLLLLLL"
-            "BBBBBBBBB",
+            "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB",
         ),
         (
             ["rotateRightCW", "rotateUpCW", "rotateRightCCW", "rotateUpCCW"],
-            "UULUUFUUF"
-            "RRUBRRURR"
-            "FFDFFUFFF"
-            "DDRDDDDDD"
-            "BLLLLLLLL"
-            "BRRBBBBBB",
+            "UULUUFUUFRRUBRRURRFFDFFUFFFDDRDDDDDDBLLLLLLLLBRRBBBBBB",
         ),
         (
-            ["rotateRightCW", "rotateUpCW", "rotateRightCCW", "rotateUpCCW"]
-            * 6,
-            "UUUUUUUUU"
-            "RRRRRRRRR"
-            "FFFFFFFFF"
-            "DDDDDDDDD"
-            "LLLLLLLLL"
-            "BBBBBBBBB",
+            ["rotateRightCW", "rotateUpCW", "rotateRightCCW", "rotateUpCCW"] * 6,
+            "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB",
         ),
         (
             [
@@ -376,12 +242,7 @@ def test_swapFacelets(
                 "rotateFrontCW",
                 "rotateDownCCW",
             ],
-            "DRLUUBFBR"
-            "BLURRLRUB"
-            "LRDDFDLFU"
-            "FUFFDBRDU"
-            "BRUFLLFDD"
-            "BFLUBLRBD",
+            "DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD",
         ),
     ],
 )
@@ -440,7 +301,7 @@ def test_getFaceletLabel(cube_initalized: RubiksCube, moves: list[str]):
 
     current_state: list[CubeLabel] = []
     for face in CubeFace:
-        for position in CubePositon:
+        for position in CubePosition:
             current_state.append(
                 cube_initalized.getFaceletLabel(Facelet(face, position))
             )

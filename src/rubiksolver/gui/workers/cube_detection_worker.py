@@ -24,7 +24,6 @@ class CubeDectionWorker(QObject):
         )
 
     def run(self):
-
         cap = cv.VideoCapture(0)
 
         if not cap.isOpened():

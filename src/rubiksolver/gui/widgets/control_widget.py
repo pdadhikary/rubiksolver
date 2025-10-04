@@ -28,18 +28,14 @@ class CubeDetectionControlPanel(QWidget):
         )
 
         self.denoiseSigmaColor_label = QLabel(text="Color Filter Sigma")
-        self.denoiseSigmaColor_slider = QLabeledSlider(
-            Qt.Orientation.Horizontal
-        )
+        self.denoiseSigmaColor_slider = QLabeledSlider(Qt.Orientation.Horizontal)
         self.denoiseSigmaColor_slider.setRange(300, 1000)
         self.denoiseSigmaColor_slider.setEdgeLabelMode(
             QLabeledSlider.EdgeLabelMode.LabelIsValue
         )
 
         self.cannyThreshold_label = QLabel(text="Canny Threshold")
-        self.cannyThreshold_slider = QLabeledRangeSlider(
-            Qt.Orientation.Horizontal
-        )
+        self.cannyThreshold_slider = QLabeledRangeSlider(Qt.Orientation.Horizontal)
         self.cannyThreshold_slider.setRange(10, 150)
 
         self.faceletAreaThreshold_label = QLabel(text="Facelet Area Threshold")
@@ -70,9 +66,7 @@ class CubeDetectionControlPanel(QWidget):
             QLabeledSlider.EdgeLabelMode.LabelIsValue
         )
 
-        self.homographyRASACMaxError_label = QLabel(
-            text="RANSAC Error Threshold"
-        )
+        self.homographyRASACMaxError_label = QLabel(text="RANSAC Error Threshold")
         self.homographyRASACMaxError_slider = QLabeledSlider(
             Qt.Orientation.Horizontal,
         )
@@ -99,12 +93,8 @@ class CubeDetectionControlPanel(QWidget):
         layout.addWidget(self.faceletContourAreaRatioThreshold_label, 5, 0)
         layout.addWidget(self.faceletContourAreaRatioThreshold_slider, 5, 1)
 
-        layout.addWidget(
-            self.faceletBoundingBoxAspectRatioThreshold_label, 6, 0
-        )
-        layout.addWidget(
-            self.faceletBoundingBoxAspectRatioThreshold_slider, 6, 1
-        )
+        layout.addWidget(self.faceletBoundingBoxAspectRatioThreshold_label, 6, 0)
+        layout.addWidget(self.faceletBoundingBoxAspectRatioThreshold_slider, 6, 1)
 
         layout.addWidget(self.homographyRASACMaxError_label, 7, 0)
         layout.addWidget(self.homographyRASACMaxError_slider, 7, 1)

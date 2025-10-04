@@ -1,7 +1,7 @@
 import numpy as np
 import pyrr
 
-from rubiksolver.cube import CubeLabel
+from rubiksolver.cube import CubeFace, CubeLabel
 from rubiksolver.vision import PlanarCubeVisualizer
 
 from .transformation import ModelMatrixStack
@@ -39,6 +39,147 @@ class RubiksCubeMesh:
         / 255.0,
     }
 
+    CubiesIndicesByFace = {
+        CubeFace.UP: [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            18,
+            19,
+            20,
+            36,
+            37,
+            38,
+            45,
+            46,
+            47,
+        ],
+        CubeFace.RIGHT: [
+            2,
+            5,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            26,
+            29,
+            32,
+            35,
+            45,
+            48,
+            51,
+        ],
+        CubeFace.FRONT: [
+            6,
+            7,
+            8,
+            9,
+            12,
+            15,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            38,
+            41,
+            44,
+        ],
+        CubeFace.DOWN: [
+            15,
+            16,
+            17,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            42,
+            43,
+            44,
+            51,
+            52,
+            53,
+        ],
+        CubeFace.LEFT: [
+            0,
+            3,
+            6,
+            18,
+            21,
+            24,
+            27,
+            30,
+            33,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            47,
+            50,
+            53,
+        ],
+        CubeFace.BACK: [
+            0,
+            1,
+            2,
+            11,
+            14,
+            17,
+            33,
+            34,
+            35,
+            36,
+            39,
+            42,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+        ],
+    }
+
     def __init__(self) -> None:
         normals = np.array(
             [
@@ -60,6 +201,29 @@ class RubiksCubeMesh:
 
     def getColorData(self, labels: list[CubeLabel]) -> np.ndarray:
         return np.array([self.ColorMap[label] for label in labels], dtype=np.float32)
+
+    def getRotationMatrices(self, face: CubeFace, angle: float) -> np.ndarray:
+        indices_to_rotate = self.CubiesIndicesByFace[face]
+
+        ids = np.eye(4, dtype=np.float32).reshape((1, 4, 4))
+        rotMats = np.repeat(ids, self.ninstances, axis=0)
+
+        rot = pyrr.matrix44.create_identity(dtype=np.float32)
+        if face == CubeFace.UP or face == CubeFace.DOWN:
+            rot = pyrr.matrix44.create_from_y_rotation(
+                np.radians(angle), dtype=np.float32
+            )
+        if face == CubeFace.RIGHT or face == CubeFace.LEFT:
+            rot = pyrr.matrix44.create_from_x_rotation(
+                np.radians(angle), dtype=np.float32
+            )
+        if face == CubeFace.FRONT or face == CubeFace.BACK:
+            rot = pyrr.matrix44.create_from_z_rotation(
+                np.radians(angle), dtype=np.float32
+            )
+
+        rotMats[indices_to_rotate] = rot
+        return rotMats
 
     def getModelMatrices(self) -> np.ndarray:
         stack = ModelMatrixStack()

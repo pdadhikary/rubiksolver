@@ -9,6 +9,7 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
 from rubiksolver.cube import CubeLabel
+from rubiksolver.cube.cube import CubeFace
 from rubiksolver.gui.mesh import RubiksCubeMesh
 
 
@@ -67,7 +68,6 @@ class CubeGLWidget(QOpenGLWidget):
             dtype=np.float32,
         )
 
-        # temp proerty
         self.angle = 0.0
 
         self.deltaTime = 0.0
@@ -147,6 +147,38 @@ class CubeGLWidget(QOpenGLWidget):
         )
         gl.glVertexAttribDivisor(6, 1)
 
+        self.rotationVBO = gl.glGenBuffers(1)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.rotationVBO)
+        rotationMatrices = self.cubeMesh.getRotationMatrices(CubeFace.BACK, self.angle)
+        gl.glBufferData(
+            gl.GL_ARRAY_BUFFER,
+            rotationMatrices.nbytes,
+            rotationMatrices,
+            gl.GL_STATIC_DRAW,
+        )
+
+        gl.glEnableVertexAttribArray(7)
+        gl.glVertexAttribPointer(7, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(0))
+        gl.glVertexAttribDivisor(7, 1)
+
+        gl.glEnableVertexAttribArray(8)
+        gl.glVertexAttribPointer(
+            8, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(16)
+        )
+        gl.glVertexAttribDivisor(8, 1)
+
+        gl.glEnableVertexAttribArray(9)
+        gl.glVertexAttribPointer(
+            9, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(32)
+        )
+        gl.glVertexAttribDivisor(9, 1)
+
+        gl.glEnableVertexAttribArray(10)
+        gl.glVertexAttribPointer(
+            10, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(48)
+        )
+        gl.glVertexAttribDivisor(10, 1)
+
         self.colorVBO = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.colorVBO)
         colorData = self.cubeMesh.getColorData(self.cubeLabels)
@@ -154,9 +186,11 @@ class CubeGLWidget(QOpenGLWidget):
             gl.GL_ARRAY_BUFFER, colorData.nbytes, colorData, gl.GL_STATIC_DRAW
         )
 
-        gl.glEnableVertexAttribArray(7)
-        gl.glVertexAttribPointer(7, 3, gl.GL_FLOAT, gl.GL_FALSE, 12, ctypes.c_void_p(0))
-        gl.glVertexAttribDivisor(7, 1)
+        gl.glEnableVertexAttribArray(11)
+        gl.glVertexAttribPointer(
+            11, 3, gl.GL_FLOAT, gl.GL_FALSE, 12, ctypes.c_void_p(0)
+        )
+        gl.glVertexAttribDivisor(11, 1)
 
         gl.glBindVertexArray(0)
 
@@ -193,8 +227,14 @@ class CubeGLWidget(QOpenGLWidget):
         gl.glBindVertexArray(self.cubeVAO)
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.colorVBO)
-        colorData = self.cubeMesh.getColorData(self.cubeLabels)
-        gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, colorData.nbytes, colorData)
+        color_data = self.cubeMesh.getColorData(self.cubeLabels)
+        gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, color_data.nbytes, color_data)
+
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.rotationVBO)
+        rotation_matrices = self.cubeMesh.getRotationMatrices(CubeFace.BACK, self.angle)
+        gl.glBufferSubData(
+            gl.GL_ARRAY_BUFFER, 0, rotation_matrices.nbytes, rotation_matrices
+        )
 
         gl.glDrawArraysInstanced(
             gl.GL_TRIANGLES, 0, self.cubeMesh.nvertices, self.cubeMesh.ninstances
@@ -239,6 +279,9 @@ class CubeGLWidget(QOpenGLWidget):
     @Slot()
     def renderUpdate(self):
         self.deltaTime = self.elapsed.restart() / 1000.0
+        self.angle += (360 / 4.5) * self.deltaTime
+        if self.angle > 360:
+            self.angle -= 360
         self.update()
 
     @staticmethod

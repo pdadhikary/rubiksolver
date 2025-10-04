@@ -21,7 +21,7 @@ class CubeLabel(Enum):
     BACK = 5
 
 
-class CubePositon(Enum):
+class CubePosition(Enum):
     ONE = 0
     TWO = 1
     THREE = 2
@@ -36,112 +36,112 @@ class CubePositon(Enum):
 @dataclass
 class Facelet:
     face: CubeFace
-    postion: CubePositon
+    postion: CubePosition
 
 
 class RubiksCube:
     EdgeMap: dict[CubeFace, list[Facelet]] = {
         CubeFace.UP: [
-            Facelet(CubeFace.BACK, CubePositon.THREE),
-            Facelet(CubeFace.BACK, CubePositon.TWO),
-            Facelet(CubeFace.BACK, CubePositon.ONE),
+            Facelet(CubeFace.BACK, CubePosition.THREE),
+            Facelet(CubeFace.BACK, CubePosition.TWO),
+            Facelet(CubeFace.BACK, CubePosition.ONE),
             #
-            Facelet(CubeFace.RIGHT, CubePositon.THREE),
-            Facelet(CubeFace.RIGHT, CubePositon.TWO),
-            Facelet(CubeFace.RIGHT, CubePositon.ONE),
+            Facelet(CubeFace.RIGHT, CubePosition.THREE),
+            Facelet(CubeFace.RIGHT, CubePosition.TWO),
+            Facelet(CubeFace.RIGHT, CubePosition.ONE),
             #
-            Facelet(CubeFace.LEFT, CubePositon.ONE),
-            Facelet(CubeFace.LEFT, CubePositon.TWO),
-            Facelet(CubeFace.LEFT, CubePositon.THREE),
+            Facelet(CubeFace.LEFT, CubePosition.ONE),
+            Facelet(CubeFace.LEFT, CubePosition.TWO),
+            Facelet(CubeFace.LEFT, CubePosition.THREE),
             #
-            Facelet(CubeFace.FRONT, CubePositon.ONE),
-            Facelet(CubeFace.FRONT, CubePositon.TWO),
-            Facelet(CubeFace.FRONT, CubePositon.THREE),
+            Facelet(CubeFace.FRONT, CubePosition.ONE),
+            Facelet(CubeFace.FRONT, CubePosition.TWO),
+            Facelet(CubeFace.FRONT, CubePosition.THREE),
         ],
         CubeFace.RIGHT: [
-            Facelet(CubeFace.UP, CubePositon.NINE),
-            Facelet(CubeFace.UP, CubePositon.SIX),
-            Facelet(CubeFace.UP, CubePositon.THREE),
+            Facelet(CubeFace.UP, CubePosition.NINE),
+            Facelet(CubeFace.UP, CubePosition.SIX),
+            Facelet(CubeFace.UP, CubePosition.THREE),
             #
-            Facelet(CubeFace.BACK, CubePositon.ONE),
-            Facelet(CubeFace.BACK, CubePositon.FOUR),
-            Facelet(CubeFace.BACK, CubePositon.SEVEN),
+            Facelet(CubeFace.BACK, CubePosition.ONE),
+            Facelet(CubeFace.BACK, CubePosition.FOUR),
+            Facelet(CubeFace.BACK, CubePosition.SEVEN),
             #
-            Facelet(CubeFace.FRONT, CubePositon.THREE),
-            Facelet(CubeFace.FRONT, CubePositon.SIX),
-            Facelet(CubeFace.FRONT, CubePositon.NINE),
+            Facelet(CubeFace.FRONT, CubePosition.THREE),
+            Facelet(CubeFace.FRONT, CubePosition.SIX),
+            Facelet(CubeFace.FRONT, CubePosition.NINE),
             #
-            Facelet(CubeFace.DOWN, CubePositon.THREE),
-            Facelet(CubeFace.DOWN, CubePositon.SIX),
-            Facelet(CubeFace.DOWN, CubePositon.NINE),
+            Facelet(CubeFace.DOWN, CubePosition.THREE),
+            Facelet(CubeFace.DOWN, CubePosition.SIX),
+            Facelet(CubeFace.DOWN, CubePosition.NINE),
         ],
         CubeFace.FRONT: [
-            Facelet(CubeFace.UP, CubePositon.SEVEN),
-            Facelet(CubeFace.UP, CubePositon.EIGHT),
-            Facelet(CubeFace.UP, CubePositon.NINE),
+            Facelet(CubeFace.UP, CubePosition.SEVEN),
+            Facelet(CubeFace.UP, CubePosition.EIGHT),
+            Facelet(CubeFace.UP, CubePosition.NINE),
             #
-            Facelet(CubeFace.RIGHT, CubePositon.ONE),
-            Facelet(CubeFace.RIGHT, CubePositon.FOUR),
-            Facelet(CubeFace.RIGHT, CubePositon.SEVEN),
+            Facelet(CubeFace.RIGHT, CubePosition.ONE),
+            Facelet(CubeFace.RIGHT, CubePosition.FOUR),
+            Facelet(CubeFace.RIGHT, CubePosition.SEVEN),
             #
-            Facelet(CubeFace.LEFT, CubePositon.THREE),
-            Facelet(CubeFace.LEFT, CubePositon.SIX),
-            Facelet(CubeFace.LEFT, CubePositon.NINE),
+            Facelet(CubeFace.LEFT, CubePosition.THREE),
+            Facelet(CubeFace.LEFT, CubePosition.SIX),
+            Facelet(CubeFace.LEFT, CubePosition.NINE),
             #
-            Facelet(CubeFace.DOWN, CubePositon.ONE),
-            Facelet(CubeFace.DOWN, CubePositon.TWO),
-            Facelet(CubeFace.DOWN, CubePositon.THREE),
+            Facelet(CubeFace.DOWN, CubePosition.ONE),
+            Facelet(CubeFace.DOWN, CubePosition.TWO),
+            Facelet(CubeFace.DOWN, CubePosition.THREE),
         ],
         CubeFace.DOWN: [
-            Facelet(CubeFace.FRONT, CubePositon.SEVEN),
-            Facelet(CubeFace.FRONT, CubePositon.EIGHT),
-            Facelet(CubeFace.FRONT, CubePositon.NINE),
+            Facelet(CubeFace.FRONT, CubePosition.SEVEN),
+            Facelet(CubeFace.FRONT, CubePosition.EIGHT),
+            Facelet(CubeFace.FRONT, CubePosition.NINE),
             #
-            Facelet(CubeFace.RIGHT, CubePositon.SEVEN),
-            Facelet(CubeFace.RIGHT, CubePositon.EIGHT),
-            Facelet(CubeFace.RIGHT, CubePositon.NINE),
+            Facelet(CubeFace.RIGHT, CubePosition.SEVEN),
+            Facelet(CubeFace.RIGHT, CubePosition.EIGHT),
+            Facelet(CubeFace.RIGHT, CubePosition.NINE),
             #
-            Facelet(CubeFace.LEFT, CubePositon.NINE),
-            Facelet(CubeFace.LEFT, CubePositon.EIGHT),
-            Facelet(CubeFace.LEFT, CubePositon.SEVEN),
+            Facelet(CubeFace.LEFT, CubePosition.NINE),
+            Facelet(CubeFace.LEFT, CubePosition.EIGHT),
+            Facelet(CubeFace.LEFT, CubePosition.SEVEN),
             #
-            Facelet(CubeFace.BACK, CubePositon.NINE),
-            Facelet(CubeFace.BACK, CubePositon.EIGHT),
-            Facelet(CubeFace.BACK, CubePositon.SEVEN),
+            Facelet(CubeFace.BACK, CubePosition.NINE),
+            Facelet(CubeFace.BACK, CubePosition.EIGHT),
+            Facelet(CubeFace.BACK, CubePosition.SEVEN),
         ],
         CubeFace.LEFT: [
-            Facelet(CubeFace.UP, CubePositon.ONE),
-            Facelet(CubeFace.UP, CubePositon.FOUR),
-            Facelet(CubeFace.UP, CubePositon.SEVEN),
+            Facelet(CubeFace.UP, CubePosition.ONE),
+            Facelet(CubeFace.UP, CubePosition.FOUR),
+            Facelet(CubeFace.UP, CubePosition.SEVEN),
             #
-            Facelet(CubeFace.FRONT, CubePositon.ONE),
-            Facelet(CubeFace.FRONT, CubePositon.FOUR),
-            Facelet(CubeFace.FRONT, CubePositon.SEVEN),
+            Facelet(CubeFace.FRONT, CubePosition.ONE),
+            Facelet(CubeFace.FRONT, CubePosition.FOUR),
+            Facelet(CubeFace.FRONT, CubePosition.SEVEN),
             #
-            Facelet(CubeFace.BACK, CubePositon.THREE),
-            Facelet(CubeFace.BACK, CubePositon.SIX),
-            Facelet(CubeFace.BACK, CubePositon.NINE),
+            Facelet(CubeFace.BACK, CubePosition.THREE),
+            Facelet(CubeFace.BACK, CubePosition.SIX),
+            Facelet(CubeFace.BACK, CubePosition.NINE),
             #
-            Facelet(CubeFace.DOWN, CubePositon.ONE),
-            Facelet(CubeFace.DOWN, CubePositon.FOUR),
-            Facelet(CubeFace.DOWN, CubePositon.SEVEN),
+            Facelet(CubeFace.DOWN, CubePosition.ONE),
+            Facelet(CubeFace.DOWN, CubePosition.FOUR),
+            Facelet(CubeFace.DOWN, CubePosition.SEVEN),
         ],
         CubeFace.BACK: [
-            Facelet(CubeFace.UP, CubePositon.ONE),
-            Facelet(CubeFace.UP, CubePositon.TWO),
-            Facelet(CubeFace.UP, CubePositon.THREE),
+            Facelet(CubeFace.UP, CubePosition.ONE),
+            Facelet(CubeFace.UP, CubePosition.TWO),
+            Facelet(CubeFace.UP, CubePosition.THREE),
             #
-            Facelet(CubeFace.LEFT, CubePositon.ONE),
-            Facelet(CubeFace.LEFT, CubePositon.FOUR),
-            Facelet(CubeFace.LEFT, CubePositon.SEVEN),
+            Facelet(CubeFace.LEFT, CubePosition.ONE),
+            Facelet(CubeFace.LEFT, CubePosition.FOUR),
+            Facelet(CubeFace.LEFT, CubePosition.SEVEN),
             #
-            Facelet(CubeFace.RIGHT, CubePositon.THREE),
-            Facelet(CubeFace.RIGHT, CubePositon.SIX),
-            Facelet(CubeFace.RIGHT, CubePositon.NINE),
+            Facelet(CubeFace.RIGHT, CubePosition.THREE),
+            Facelet(CubeFace.RIGHT, CubePosition.SIX),
+            Facelet(CubeFace.RIGHT, CubePosition.NINE),
             #
-            Facelet(CubeFace.DOWN, CubePositon.SEVEN),
-            Facelet(CubeFace.DOWN, CubePositon.EIGHT),
-            Facelet(CubeFace.DOWN, CubePositon.NINE),
+            Facelet(CubeFace.DOWN, CubePosition.SEVEN),
+            Facelet(CubeFace.DOWN, CubePosition.EIGHT),
+            Facelet(CubeFace.DOWN, CubePosition.NINE),
         ],
     }
 
@@ -161,7 +161,7 @@ class RubiksCube:
             CubeLabel.UNLABELD for _ in range(self.numFacelets)
         ]
         for cube_face in CubeFace:
-            center_idx = (cube_face.value * 9) + CubePositon.FIVE.value
+            center_idx = (cube_face.value * 9) + CubePosition.FIVE.value
             self.state[center_idx] = CubeLabel(cube_face.value)
 
     def rotateFrontCW(self) -> None:
@@ -232,13 +232,13 @@ class RubiksCube:
 
     def _transposeFace(self, face: CubeFace) -> None:
         self._swapFacelets(
-            Facelet(face, CubePositon.TWO), Facelet(face, CubePositon.FOUR)
+            Facelet(face, CubePosition.TWO), Facelet(face, CubePosition.FOUR)
         )
         self._swapFacelets(
-            Facelet(face, CubePositon.THREE), Facelet(face, CubePositon.SEVEN)
+            Facelet(face, CubePosition.THREE), Facelet(face, CubePosition.SEVEN)
         )
         self._swapFacelets(
-            Facelet(face, CubePositon.SIX), Facelet(face, CubePositon.EIGHT)
+            Facelet(face, CubePosition.SIX), Facelet(face, CubePosition.EIGHT)
         )
 
     def _flipEdges(self, face: CubeFace) -> None:
@@ -250,13 +250,13 @@ class RubiksCube:
 
     def _flipFace(self, face: CubeFace) -> None:
         self._swapFacelets(
-            Facelet(face, CubePositon.ONE), Facelet(face, CubePositon.THREE)
+            Facelet(face, CubePosition.ONE), Facelet(face, CubePosition.THREE)
         )
         self._swapFacelets(
-            Facelet(face, CubePositon.FOUR), Facelet(face, CubePositon.SIX)
+            Facelet(face, CubePosition.FOUR), Facelet(face, CubePosition.SIX)
         )
         self._swapFacelets(
-            Facelet(face, CubePositon.SEVEN), Facelet(face, CubePositon.NINE)
+            Facelet(face, CubePosition.SEVEN), Facelet(face, CubePosition.NINE)
         )
 
     def _swapFacelets(self, facelet1: Facelet, facelet2: Facelet) -> None:

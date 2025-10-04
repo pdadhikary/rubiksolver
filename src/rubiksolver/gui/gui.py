@@ -3,7 +3,7 @@ from PySide6.QtCore import QSize, QThread
 from PySide6.QtGui import QImage, QPixmap, Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QMainWindow, QSizePolicy, QWidget
 
-from rubiksolver.cube import CubeFace, CubeLabel, CubePositon, Facelet, RubiksCube
+from rubiksolver.cube import CubeFace, CubeLabel, CubePosition, Facelet, RubiksCube
 from rubiksolver.vision import CubeDetectionResult, PlanarCubeVisualizer
 
 from .widgets import Cube3DViewerWidget, CubeDetectionControlPanel
@@ -176,5 +176,5 @@ class CubeDetectionAppWindow(QMainWindow):
         for i in range(9):
             if result.labels[i] == CubeLabel.UNLABELD or i == 4:
                 continue
-            positon = CubePositon(i)
+            positon = CubePosition(i)
             self.cube.setFaceletLabel(Facelet(face, positon), result.labels[i])

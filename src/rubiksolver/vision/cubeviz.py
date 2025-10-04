@@ -1,7 +1,7 @@
 import cv2 as cv
 from cv2.typing import MatLike
 
-from rubiksolver.cube import CubeFace, CubeLabel, CubePositon, Facelet, RubiksCube
+from rubiksolver.cube import CubeFace, CubeLabel, CubePosition, Facelet, RubiksCube
 
 from .vision import CubeDetectionResult
 
@@ -83,7 +83,7 @@ class PlanarCubeVisualizer:
                 for c in range(3):
                     startX = topX + c * (self.faceletSize + self.faceGutter)
                     color = self.colorMap[
-                        cube.getFaceletLabel(Facelet(face, CubePositon(r * 3 + c)))
+                        cube.getFaceletLabel(Facelet(face, CubePosition(r * 3 + c)))
                     ]
                     frame = cv.rectangle(
                         frame,
