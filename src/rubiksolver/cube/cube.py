@@ -35,6 +35,58 @@ class CubePosition(Enum):
     NINE = 8
 
 
+class CubeMove(Enum):
+    U = 0
+    UPRIME = 1
+    R = 2
+    RPRIME = 3
+    F = 4
+    FPRIME = 5
+    D = 6
+    DPRIME = 7
+    L = 8
+    LPRIME = 9
+    B = 10
+    BPRIME = 11
+
+
+class MoveTimeline:
+    MoveReverse = {
+        CubeMove.U: CubeMove.UPRIME,
+        CubeMove.UPRIME: CubeMove.U,
+        CubeMove.R: CubeMove.RPRIME,
+        CubeMove.RPRIME: CubeMove.R,
+        CubeMove.F: CubeMove.FPRIME,
+        CubeMove.FPRIME: CubeMove.F,
+        CubeMove.D: CubeMove.DPRIME,
+        CubeMove.DPRIME: CubeMove.D,
+        CubeMove.L: CubeMove.LPRIME,
+        CubeMove.LPRIME: CubeMove.L,
+        CubeMove.B: CubeMove.BPRIME,
+        CubeMove.BPRIME: CubeMove.B,
+    }
+
+    def __init__(self, moves: list[CubeMove]):
+        self.moves = moves
+        self.currentPosition = 0
+        self.numMoves = len(moves)
+
+    def next(self) -> CubeMove | None:
+        if self.currentPosition >= self.numMoves:
+            return None
+        move = self.moves[self.currentPosition]
+        self.currentPosition += 1
+        return move
+
+    def prev(self) -> CubeMove | None:
+        if self.currentPosition <= 0:
+            return None
+
+        self.currentPosition -= 1
+        move = self.MoveReverse[self.moves[self.currentPosition]]
+        return move
+
+
 @dataclass
 class Facelet:
     face: CubeFace
@@ -124,14 +176,14 @@ class RubiksCube:
             Facelet(CubeFace.BACK, CubePosition.SIX),
             Facelet(CubeFace.BACK, CubePosition.NINE),
             #
-            Facelet(CubeFace.DOWN, CubePosition.ONE),
-            Facelet(CubeFace.DOWN, CubePosition.FOUR),
             Facelet(CubeFace.DOWN, CubePosition.SEVEN),
+            Facelet(CubeFace.DOWN, CubePosition.FOUR),
+            Facelet(CubeFace.DOWN, CubePosition.ONE),
         ],
         CubeFace.BACK: [
-            Facelet(CubeFace.UP, CubePosition.ONE),
-            Facelet(CubeFace.UP, CubePosition.TWO),
             Facelet(CubeFace.UP, CubePosition.THREE),
+            Facelet(CubeFace.UP, CubePosition.TWO),
+            Facelet(CubeFace.UP, CubePosition.ONE),
             #
             Facelet(CubeFace.LEFT, CubePosition.ONE),
             Facelet(CubeFace.LEFT, CubePosition.FOUR),
@@ -141,9 +193,9 @@ class RubiksCube:
             Facelet(CubeFace.RIGHT, CubePosition.SIX),
             Facelet(CubeFace.RIGHT, CubePosition.NINE),
             #
-            Facelet(CubeFace.DOWN, CubePosition.SEVEN),
-            Facelet(CubeFace.DOWN, CubePosition.EIGHT),
             Facelet(CubeFace.DOWN, CubePosition.NINE),
+            Facelet(CubeFace.DOWN, CubePosition.EIGHT),
+            Facelet(CubeFace.DOWN, CubePosition.SEVEN),
         ],
     }
 
@@ -166,18 +218,76 @@ class RubiksCube:
             center_idx = (cube_face.value * 9) + CubePosition.FIVE.value
             self.state[center_idx] = CubeLabel(cube_face.value)
 
-        self.solution: str | None = None
+        self.solution: MoveTimeline | None = None
 
     def isComplete(self) -> bool:
         try:
             if CubeLabel.UNLABELD not in self.state:
                 solution = kociemba.solve(str(self))
                 if isinstance(solution, str):
-                    self.solution = solution
+                    print(solution)
+                    print(self)
+                    self.solution = self.parseSolution(solution)
                     return True
         except ValueError:
             return False
         return False
+
+    def parseSolution(self, solution: str) -> MoveTimeline:
+        moves: list[CubeMove] = []
+        for move in solution.split(" "):
+            match move:
+                case "U":
+                    moves.append(CubeMove.U)
+                case "U'":
+                    moves.append(CubeMove.UPRIME)
+                case "U2":
+                    moves.append(CubeMove.U)
+                    moves.append(CubeMove.U)
+
+                case "R":
+                    moves.append(CubeMove.R)
+                case "R'":
+                    moves.append(CubeMove.RPRIME)
+                case "R2":
+                    moves.append(CubeMove.R)
+                    moves.append(CubeMove.R)
+
+                case "F":
+                    moves.append(CubeMove.F)
+                case "F'":
+                    moves.append(CubeMove.FPRIME)
+                case "F2":
+                    moves.append(CubeMove.F)
+                    moves.append(CubeMove.F)
+
+                case "D":
+                    moves.append(CubeMove.D)
+                case "D'":
+                    moves.append(CubeMove.DPRIME)
+                case "D2":
+                    moves.append(CubeMove.D)
+                    moves.append(CubeMove.D)
+
+                case "L":
+                    moves.append(CubeMove.L)
+                case "L'":
+                    moves.append(CubeMove.LPRIME)
+                case "L2":
+                    moves.append(CubeMove.L)
+                    moves.append(CubeMove.L)
+
+                case "B":
+                    moves.append(CubeMove.B)
+                case "B'":
+                    moves.append(CubeMove.BPRIME)
+                case "B2":
+                    moves.append(CubeMove.B)
+                    moves.append(CubeMove.B)
+                case _:
+                    raise ValueError(f'Move "{move}" not recognized!')
+
+        return MoveTimeline(moves)
 
     def reset(self) -> None:
         self.state = [CubeLabel.UNLABELD for _ in range(self.numFacelets)]
@@ -185,7 +295,34 @@ class RubiksCube:
             center_idx = (cube_face.value * 9) + CubePosition.FIVE.value
             self.state[center_idx] = CubeLabel(cube_face.value)
 
-        self.solution: str | None = None
+        self.solution = None
+
+    def applyMove(self, move: CubeMove) -> None:
+        match move:
+            case CubeMove.U:
+                self.rotateUpCW()
+            case CubeMove.UPRIME:
+                self.rotateUpCCW()
+            case CubeMove.R:
+                self.rotateRightCW()
+            case CubeMove.RPRIME:
+                self.rotateRightCCW()
+            case CubeMove.F:
+                self.rotateFrontCW()
+            case CubeMove.FPRIME:
+                self.rotateFrontCCW()
+            case CubeMove.D:
+                self.rotateDownCW()
+            case CubeMove.DPRIME:
+                self.rotateDownCCW()
+            case CubeMove.L:
+                self.rotateLeftCW()
+            case CubeMove.LPRIME:
+                self.rotateLeftCCW()
+            case CubeMove.B:
+                self.rotateBackCW()
+            case CubeMove.BPRIME:
+                self.rotateBackCCW()
 
     def rotateFrontCW(self) -> None:
         self._rotateFaceCW(CubeFace.FRONT)
