@@ -8,12 +8,41 @@ from PySide6.QtCore import QElapsedTimer, Qt, QTimer, Slot
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QPushButton, QSlider, QWidget
 
-from rubiksolver.cube import CubeLabel
-from rubiksolver.cube.cube import CubeFace
+from rubiksolver.cube import CubeFace, CubeLabel, CubeMove
 from rubiksolver.gui.mesh import RubiksCubeMesh
 
 
 class Cube3DViewerWidget(QWidget):
+    MoveFaceToRotate = {
+        CubeMove.U: CubeFace.UP,
+        CubeMove.UPRIME: CubeFace.UP,
+        CubeMove.R: CubeFace.RIGHT,
+        CubeMove.RPRIME: CubeFace.RIGHT,
+        CubeMove.F: CubeFace.FRONT,
+        CubeMove.FPRIME: CubeFace.FRONT,
+        CubeMove.D: CubeFace.DOWN,
+        CubeMove.DPRIME: CubeFace.DOWN,
+        CubeMove.L: CubeFace.LEFT,
+        CubeMove.LPRIME: CubeFace.LEFT,
+        CubeMove.B: CubeFace.BACK,
+        CubeMove.BPRIME: CubeFace.BACK,
+    }
+
+    MoveAngleDir = {
+        CubeMove.U: 1,
+        CubeMove.UPRIME: -1,
+        CubeMove.R: 1,
+        CubeMove.RPRIME: -1,
+        CubeMove.F: 1,
+        CubeMove.FPRIME: -1,
+        CubeMove.D: -1,
+        CubeMove.DPRIME: 1,
+        CubeMove.L: -1,
+        CubeMove.LPRIME: 1,
+        CubeMove.B: -1,
+        CubeMove.BPRIME: 1,
+    }
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
@@ -53,8 +82,8 @@ class Cube3DViewerWidget(QWidget):
         buttonContainer = QWidget()
         self.buttonLayout = QHBoxLayout(buttonContainer)
 
-        self.buttonLayout.addWidget(self.nextButton)
         self.buttonLayout.addWidget(self.prevButton)
+        self.buttonLayout.addWidget(self.nextButton)
         self.buttonLayout.addWidget(self.playButton)
         self.buttonLayout.addWidget(self.resetButton)
 
@@ -64,6 +93,12 @@ class Cube3DViewerWidget(QWidget):
         layout.addWidget(self.cameraYawSlider, 2, 1)
         layout.addWidget(self.cubeWidget, 1, 1)
         layout.addWidget(buttonContainer, 3, 0, 1, 2)
+
+    def playMove(self, move: CubeMove, labels: list[CubeLabel]):
+        self.cubeWidget.cubeFaceToRotate = self.MoveFaceToRotate[move]
+        self.cubeWidget.faceRotateDir = self.MoveAngleDir[move]
+        self.cubeWidget.angle = -90.0 * self.cubeWidget.faceRotateDir
+        self.cubeWidget.setCubeLabels(labels)
 
     def cleanup(self):
         self.cubeWidget.cleanup()
@@ -87,6 +122,8 @@ class CubeGLWidget(QOpenGLWidget):
         )
 
         self.angle = 0.0
+        self.cubeFaceToRotate: CubeFace | None = None
+        self.faceRotateDir: int = 0
 
         self.deltaTime = 0.0
         self.elapsed = QElapsedTimer()
@@ -167,11 +204,13 @@ class CubeGLWidget(QOpenGLWidget):
 
         self.rotationVBO = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.rotationVBO)
-        rotationMatrices = self.cubeMesh.getRotationMatrices(CubeFace.BACK, self.angle)
+        self._identityRotationMatrices = self.cubeMesh.getRotationMatrices(
+            CubeFace.UP, 0.0
+        )
         gl.glBufferData(
             gl.GL_ARRAY_BUFFER,
-            rotationMatrices.nbytes,
-            rotationMatrices,
+            self._identityRotationMatrices.nbytes,
+            self._identityRotationMatrices,
             gl.GL_STATIC_DRAW,
         )
 
@@ -249,7 +288,21 @@ class CubeGLWidget(QOpenGLWidget):
         gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, color_data.nbytes, color_data)
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.rotationVBO)
-        rotation_matrices = self.cubeMesh.getRotationMatrices(CubeFace.BACK, self.angle)
+
+        self.angle += (90 / 1.5) * self.deltaTime * self.faceRotateDir
+        if (self.angle < 0 and self.faceRotateDir < 0) or (
+            self.angle >= 0 and self.faceRotateDir > 0
+        ):
+            self.angle = 0
+            self.faceRotateDir = 0
+            self.cubeFaceToRotate = None
+
+        if self.cubeFaceToRotate is None:
+            rotation_matrices = self._identityRotationMatrices
+        else:
+            rotation_matrices = self.cubeMesh.getRotationMatrices(
+                self.cubeFaceToRotate, self.angle
+            )
         gl.glBufferSubData(
             gl.GL_ARRAY_BUFFER, 0, rotation_matrices.nbytes, rotation_matrices
         )
@@ -297,9 +350,6 @@ class CubeGLWidget(QOpenGLWidget):
     @Slot()
     def renderUpdate(self):
         self.deltaTime = self.elapsed.restart() / 1000.0
-        self.angle += (360 / 4.5) * self.deltaTime
-        if self.angle > 360:
-            self.angle -= 360
         self.update()
 
     @staticmethod

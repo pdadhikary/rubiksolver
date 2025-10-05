@@ -1,3 +1,19 @@
-from .cube import CubeFace, CubeLabel, CubePosition, Facelet, RubiksCube
+from .cube import (
+    CubeFace,
+    CubeLabel,
+    CubeMove,
+    CubePosition,
+    Facelet,
+    MoveTimeline,
+    RubiksCube,
+)
 
-__all__ = ["CubeFace", "CubeLabel", "CubePosition", "Facelet", "RubiksCube"]
+__all__ = [
+    "CubeFace",
+    "CubeLabel",
+    "CubePosition",
+    "Facelet",
+    "RubiksCube",
+    "MoveTimeline",
+    "CubeMove",
+]

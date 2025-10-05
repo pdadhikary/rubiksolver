@@ -3,7 +3,14 @@ from PySide6.QtCore import QSize, QThread, Signal, Slot
 from PySide6.QtGui import QImage, QPixmap, Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QMainWindow, QSizePolicy, QWidget
 
-from rubiksolver.cube import CubeFace, CubeLabel, CubePosition, Facelet, RubiksCube
+from rubiksolver.cube import (
+    CubeFace,
+    CubeLabel,
+    CubePosition,
+    Facelet,
+    MoveTimeline,
+    RubiksCube,
+)
 from rubiksolver.vision import CubeDetectionResult, PlanarCubeVisualizer
 
 from .widgets import Cube3DViewerWidget, CubeDetectionControlPanel
@@ -22,6 +29,7 @@ class CubeDetectionAppWindow(QMainWindow):
         self.cubeDetectionThread = QThread()
         self.detectionStarted = False
         self.cubeDetectionWorker = CubeDectionWorker()
+        self.animTimeline: MoveTimeline | None = None
         self.setup()
 
         self.cubeDetectionWorker.moveToThread(self.cubeDetectionThread)
@@ -194,26 +202,40 @@ class CubeDetectionAppWindow(QMainWindow):
 
     def onScanComplete(self):
         self.PauseSignal.emit()
+        self.animTimeline = self.cube.solution
         self.cubeViewer.playButton.setEnabled(True)
         self.cubeViewer.nextButton.setEnabled(True)
         self.cubeViewer.prevButton.setEnabled(True)
 
     @Slot()
     def playPressed(self):
-        # TODO: Implement animation autoplay
         pass
 
     @Slot()
     def nextPressed(self):
-        # TODO: Implement animation step forward
-        pass
+        if self.animTimeline is None:
+            return
+        move = self.animTimeline.next()
+        if move is None:
+            return
+        self.cube.applyMove(move)
+        print(f"{move}: {self.cube}")
+        self.cubeViewer.playMove(move, self.cube.state)
 
     @Slot()
     def prevPressed(self):
-        # TODO: Implement animation step back
-        pass
+        if self.animTimeline is None:
+            return
+        move = self.animTimeline.prev()
+        if move is None:
+            return
+        self.cube.applyMove(move)
+        self.cubeViewer.playMove(move, self.cube.state)
 
     @Slot()
     def resetPressed(self):
         self.ResumeSignal.emit()
+        self.cubeViewer.playButton.setDisabled(True)
+        self.cubeViewer.nextButton.setDisabled(True)
+        self.cubeViewer.prevButton.setDisabled(True)
         self.cube.reset()
