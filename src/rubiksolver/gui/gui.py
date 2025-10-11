@@ -1,4 +1,7 @@
+from os import makedirs, path
+
 import cv2 as cv
+import numpy as np
 from PySide6.QtCore import QSize, QThread, Signal, Slot
 from PySide6.QtGui import QImage, QPixmap, Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QMainWindow, QSizePolicy, QWidget
@@ -12,6 +15,7 @@ from rubiksolver.cube import (
     RubiksCube,
 )
 from rubiksolver.vision import CubeDetectionResult, PlanarCubeVisualizer
+from rubiksolver.vision.vision import HSV
 
 from .widgets import Cube3DViewerWidget, CubeDetectionControlPanel
 from .workers import CubeDectionWorker
@@ -190,6 +194,8 @@ class CubeDetectionAppWindow(QMainWindow):
         if result.numFaceletsDetected != 9 or result.labels[4] == CubeLabel.UNLABELD:
             return
 
+        self.saveMeanColors(result.mean_facelet_color)
+
         face = CubeFace(result.labels[4].value)
         for i in range(9):
             if result.labels[i] == CubeLabel.UNLABELD or i == 4:
@@ -199,6 +205,28 @@ class CubeDetectionAppWindow(QMainWindow):
 
             if self.cube.isComplete():
                 self.onScanComplete()
+
+    def saveMeanColors(self, mean_colors: list[HSV]):
+        homedir = path.expanduser("~")
+        path_to_npyfile = path.join(homedir, ".local", "share", "rubiksolver")
+
+        if not path.exists(path_to_npyfile):
+            makedirs(path_to_npyfile)
+
+        filename = "meancolors.npy"
+
+        colors_array = np.array(
+            [
+                (hsv_color.hue, hsv_color.saturation, hsv_color.value)
+                for hsv_color in mean_colors
+            ]
+        )
+
+        if path.exists(path.join(path_to_npyfile, filename)):
+            previous_colors = np.load(path.join(path_to_npyfile, filename))
+            colors_array = np.concatenate((previous_colors, colors_array))
+
+        np.save(path.join(path_to_npyfile, filename), colors_array)
 
     def onScanComplete(self):
         self.PauseSignal.emit()

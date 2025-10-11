@@ -31,6 +31,7 @@ class CubeDetectionResult:
     facelet_contour_rotated_bb: list[RotatedRect]
     facelet_contour_rotated_bb_points: list[MatLike]
     labels: list[CubeLabel]
+    mean_facelet_color: list[HSV]
 
 
 @dataclass
@@ -191,7 +192,7 @@ class CubeDetectionPipeline:
         frame_edges = self.getCannyEdges(frame_preprocessed)
         candidates = self.findCandidateFacelets(frame_edges)
         facelets = self.faceletCandidateRANSAC(candidates)
-        labels = self.labelFacelets(self.frame, facelets)
+        labels, mean_colors = self.labelFacelets(self.frame, facelets)
 
         rects: list[Rect] = [cv.boundingRect(facelet) for facelet in facelets]
         rects_rotated: list[RotatedRect] = [
@@ -213,6 +214,7 @@ class CubeDetectionPipeline:
             rects_rotated,
             rects_rotated_points,
             labels,
+            mean_colors,
         )
 
     def preprocessFrame(self, frame: MatLike) -> MatLike:
@@ -340,10 +342,13 @@ class CubeDetectionPipeline:
 
         return [candidates[i] for i in best_inliers]
 
-    def labelFacelets(self, frame: MatLike, facelets: list[MatLike]) -> list[CubeLabel]:
+    def labelFacelets(
+        self, frame: MatLike, facelets: list[MatLike]
+    ) -> tuple[list[CubeLabel], list[HSV]]:
         frame_hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
-        results: list[CubeLabel] = []
+        labels: list[CubeLabel] = []
+        mean_colors: list[HSV] = []
 
         for facelet in facelets:
             mask = np.zeros(frame.shape[:2], dtype=np.uint8)
@@ -354,9 +359,10 @@ class CubeDetectionPipeline:
             med = np.median(pixels, axis=0)
             hsv = HSV(*(tuple(map(int, med))))
 
-            results.append(self.faceletColorClassifier.classify(hsv))
+            labels.append(self.faceletColorClassifier.classify(hsv))
+            mean_colors.append(hsv)
 
-        return results
+        return labels, mean_colors
 
     def getFinishedFrame(self, frame: MatLike) -> MatLike:
         text = "Cube Scan Complete."

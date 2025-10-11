@@ -53,6 +53,7 @@ class CubeDectionWorker(QObject):
                     [],
                     [],
                     [],
+                    [],
                 )
             else:
                 self.pipeline.forward(frame)

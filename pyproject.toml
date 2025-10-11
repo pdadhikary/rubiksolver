@@ -32,6 +32,7 @@ packages = ["src/rubiksolver"]
 
 [project.scripts]
 rubiksolver = "rubiksolver.app:main"
+calibrate = "rubiksolver.calibrate:main"
 
 [tool.pytest.ini_options]
 addopts = "--maxfail=1 --cov-report html --cov"
