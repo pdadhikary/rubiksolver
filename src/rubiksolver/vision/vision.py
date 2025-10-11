@@ -136,12 +136,12 @@ class ColorClassificationModel(ABC):
 
 class FixedColorClassificationModel(ColorClassificationModel):
     ColorLabelMap: dict[CubeLabel, HSV_Range] = {
-        CubeLabel.UP: HSV_Range(HSV(0, 0, 130), HSV(180, 90, 255)),
-        CubeLabel.RIGHT: HSV_Range(HSV(95, 140, 90), HSV(130, 255, 255)),
-        CubeLabel.FRONT: HSV_Range(HSV(160, 100, 90), HSV(180, 255, 255)),
-        CubeLabel.DOWN: HSV_Range(HSV(20, 100, 90), HSV(35, 255, 255)),
-        CubeLabel.LEFT: HSV_Range(HSV(40, 100, 90), HSV(80, 255, 255)),
-        CubeLabel.BACK: HSV_Range(HSV(5, 140, 150), HSV(15, 255, 255)),
+        CubeLabel.UP: HSV_Range(HSV(0, 0, 0), HSV(180, 60, 255)),
+        CubeLabel.RIGHT: HSV_Range(HSV(90, 65, 0), HSV(110, 255, 255)),
+        CubeLabel.FRONT: HSV_Range(HSV(160, 100, 0), HSV(180, 255, 255)),
+        CubeLabel.DOWN: HSV_Range(HSV(20, 80, 0), HSV(36, 255, 255)),
+        CubeLabel.LEFT: HSV_Range(HSV(37, 65, 0), HSV(70, 255, 255)),
+        CubeLabel.BACK: HSV_Range(HSV(0, 90, 0), HSV(15, 255, 255)),
     }
 
     def classify(self, hsv: HSV) -> CubeLabel:
