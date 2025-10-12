@@ -1,6 +1,10 @@
 # Rubiksolver
 
-[![Rubiksolver Demo](https://img.youtube.com/vi/abj7ubu9g8o/0.jpg)](https://www.youtube.com/watch?v=abj7ubu9g8o)
+
+https://github.com/user-attachments/assets/437902a8-08ce-4c79-a4a9-40c0c7fcf09c
+
+
+▶️ [Watch the Demo on YouTube](https://www.youtube.com/watch?v=abj7ubu9g8o)
 
 **Music** — "Mighty Like Us" by Kevin MacLeod (incompetech.com)\
 Licensed under Creative Commons: By Attribution 4.0 License\
