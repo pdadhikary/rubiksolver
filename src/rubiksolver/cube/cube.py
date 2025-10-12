@@ -226,7 +226,6 @@ class RubiksCube:
                 solution = kociemba.solve(str(self))
                 if isinstance(solution, str):
                     print(solution)
-                    print(self)
                     self.solution = self.parseSolution(solution)
                     return True
         except ValueError:

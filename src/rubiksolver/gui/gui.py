@@ -5,6 +5,7 @@ import numpy as np
 from PySide6.QtCore import QSize, QThread, Signal, Slot
 from PySide6.QtGui import QImage, QPixmap, Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QMainWindow, QSizePolicy, QWidget
+from qtpy.QtCore import QTimer
 
 from rubiksolver.cube import (
     CubeFace,
@@ -34,6 +35,8 @@ class CubeDetectionAppWindow(QMainWindow):
         self.detectionStarted = False
         self.cubeDetectionWorker = CubeDectionWorker()
         self.animTimeline: MoveTimeline | None = None
+        self.nextMoveTimer: QTimer = QTimer(self, interval=2000)
+        self.nextMoveTimer.timeout.connect(self.nextPressed)
         self.setup()
 
         self.cubeDetectionWorker.moveToThread(self.cubeDetectionThread)
@@ -121,6 +124,7 @@ class CubeDetectionAppWindow(QMainWindow):
         )
 
         self.cubeViewer.playButton.pressed.connect(self.playPressed)
+        self.cubeViewer.pauseButton.pressed.connect(self.pausePressed)
         self.cubeViewer.nextButton.pressed.connect(self.nextPressed)
         self.cubeViewer.prevButton.pressed.connect(self.prevPressed)
         self.cubeViewer.resetButton.pressed.connect(self.resetPressed)
@@ -237,7 +241,31 @@ class CubeDetectionAppWindow(QMainWindow):
 
     @Slot()
     def playPressed(self):
-        pass
+        self.cubeViewer.playButton.setDisabled(True)
+        self.cubeViewer.nextButton.setDisabled(True)
+        self.cubeViewer.prevButton.setDisabled(True)
+        self.cubeViewer.pauseButton.setDisabled(False)
+        self.cubeViewer.resetButton.setDisabled(True)
+
+        self.nextPressed()
+        self.nextMoveTimer.start()
+
+    @Slot()
+    def pausePressed(self):
+        self.nextMoveTimer.stop()
+        self.cubeViewer.pauseButton.setDisabled(True)
+
+        if (
+            self.animTimeline
+            and self.animTimeline.currentPosition < self.animTimeline.numMoves
+        ):
+            self.cubeViewer.playButton.setDisabled(False)
+            self.cubeViewer.nextButton.setDisabled(False)
+
+        if self.animTimeline and self.animTimeline.currentPosition > 0:
+            self.cubeViewer.prevButton.setDisabled(False)
+
+        self.cubeViewer.resetButton.setDisabled(False)
 
     @Slot()
     def nextPressed(self):
@@ -245,9 +273,15 @@ class CubeDetectionAppWindow(QMainWindow):
             return
         move = self.animTimeline.next()
         if move is None:
+            self.nextMoveTimer.stop()
+            self.cubeViewer.playButton.setDisabled(True)
+            self.cubeViewer.nextButton.setDisabled(True)
+            self.cubeViewer.prevButton.setDisabled(False)
+            self.cubeViewer.pauseButton.setDisabled(True)
+            self.cubeViewer.resetButton.setDisabled(False)
             return
+        self.cubeViewer.prevButton.setDisabled(False)
         self.cube.applyMove(move)
-        print(f"{move}: {self.cube}")
         self.cubeViewer.playMove(move, self.cube.state)
 
     @Slot()
@@ -257,13 +291,16 @@ class CubeDetectionAppWindow(QMainWindow):
         move = self.animTimeline.prev()
         if move is None:
             return
+        self.cubeViewer.nextButton.setDisabled(False)
         self.cube.applyMove(move)
         self.cubeViewer.playMove(move, self.cube.state)
 
     @Slot()
     def resetPressed(self):
         self.ResumeSignal.emit()
+        self.animTimeline = None
         self.cubeViewer.playButton.setDisabled(True)
+        self.cubeViewer.pauseButton.setDisabled(True)
         self.cubeViewer.nextButton.setDisabled(True)
         self.cubeViewer.prevButton.setDisabled(True)
         self.cube.reset()

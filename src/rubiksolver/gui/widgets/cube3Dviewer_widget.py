@@ -73,10 +73,12 @@ class Cube3DViewerWidget(QWidget):
         self.nextButton = QPushButton("Next")
         self.prevButton = QPushButton("Previous")
         self.playButton = QPushButton("Play")
+        self.pauseButton = QPushButton("Pause")
         self.resetButton = QPushButton("Reset")
 
         self.nextButton.setDisabled(True)
         self.prevButton.setDisabled(True)
+        self.pauseButton.setDisabled(True)
         self.playButton.setDisabled(True)
 
         buttonContainer = QWidget()
@@ -85,6 +87,7 @@ class Cube3DViewerWidget(QWidget):
         self.buttonLayout.addWidget(self.prevButton)
         self.buttonLayout.addWidget(self.nextButton)
         self.buttonLayout.addWidget(self.playButton)
+        self.buttonLayout.addWidget(self.pauseButton)
         self.buttonLayout.addWidget(self.resetButton)
 
         layout = QGridLayout(self)
