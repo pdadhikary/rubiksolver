@@ -2,7 +2,7 @@ import cProfile
 import pstats
 import sys
 
-from PySide6.QtGui import QSurfaceFormat
+# from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication
 
 from .gui import CubeDetectionAppWindow
@@ -18,11 +18,10 @@ def main():
 
 
 def run():
-    fmt = QSurfaceFormat()
-    fmt.setVersion(3, 3)
-    fmt.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
-    QSurfaceFormat.setDefaultFormat(fmt)
-
+    # fmt = QSurfaceFormat()
+    # fmt.setVersion(3, 3)
+    # fmt.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
+    # QSurfaceFormat.setDefaultFormat(fmt)
     app = QApplication(sys.argv)
     window = CubeDetectionAppWindow()
     window.setMinimumSize(1600, 900)

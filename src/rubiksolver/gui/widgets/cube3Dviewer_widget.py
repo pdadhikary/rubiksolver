@@ -3,8 +3,8 @@ import ctypes
 import numpy as np
 import OpenGL.GL as gl
 import pyrr
-from OpenGL.GL.shaders import ShaderProgram, compileProgram, compileShader
 from PySide6.QtCore import QElapsedTimer, Qt, QTimer, Slot
+from PySide6.QtOpenGL import QOpenGLShader, QOpenGLShaderProgram
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QPushButton, QSlider, QWidget
 
@@ -138,24 +138,29 @@ class CubeGLWidget(QOpenGLWidget):
         self.renderTimer.start()
 
     def initializeGL(self) -> None:
-        print(f"OpenGL version: {gl.glGetString(gl.GL_VERSION)}")
-        self.cubeMesh = RubiksCubeMesh()
+        # Debug info
+        print("Context Valid:", self.context().isValid())
+        print("Renderer:", gl.glGetString(gl.GL_RENDERER))
+        print("Vendor:", gl.glGetString(gl.GL_VENDOR))
+        print("OpenGL Version:", gl.glGetString(gl.GL_VERSION))
+        print("GLSL Version:", gl.glGetString(gl.GL_SHADING_LANGUAGE_VERSION))
 
-        self.aspect = self.size().width() / self.size().height()
+        # Load cube mesh and program
+        self.cubeMesh = RubiksCubeMesh()
+        self.aspect = self.width() / self.height()
 
         self.program = CubeGLWidget.loadProgram(
             "src/shaders/shader.vert", "src/shaders/shader.frag"
         )
-        gl.glUseProgram(self.program)
 
-        self.projectionUniformLocation = gl.glGetUniformLocation(
-            self.program, "projection"
-        )
-        self.viewUniformLocation = gl.glGetUniformLocation(self.program, "view")
+        self.projectionUniformLocation = self.program.uniformLocation("projection")
+        self.viewUniformLocation = self.program.uniformLocation("view")
 
+        # ----- Setup VAO -----
         self.cubeVAO = gl.glGenVertexArrays(1)
         gl.glBindVertexArray(self.cubeVAO)
 
+        # ----- Mesh VBO -----
         self.meshVBO = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.meshVBO)
         vertices = self.cubeMesh.vertices
@@ -176,6 +181,7 @@ class CubeGLWidget(QOpenGLWidget):
             2, 3, gl.GL_FLOAT, gl.GL_FALSE, 32, ctypes.c_void_p(20)
         )
 
+        # ----- Model Matrices VBO -----
         self.modelVBO = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.modelVBO)
         modelMatrices = self.cubeMesh.modelMatices
@@ -183,28 +189,14 @@ class CubeGLWidget(QOpenGLWidget):
             gl.GL_ARRAY_BUFFER, modelMatrices.nbytes, modelMatrices, gl.GL_STATIC_DRAW
         )
 
-        gl.glEnableVertexAttribArray(3)
-        gl.glVertexAttribPointer(3, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(0))
-        gl.glVertexAttribDivisor(3, 1)
+        for i in range(4):
+            gl.glEnableVertexAttribArray(3 + i)
+            gl.glVertexAttribPointer(
+                3 + i, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(i * 16)
+            )
+            gl.glVertexAttribDivisor(3 + i, 1)
 
-        gl.glEnableVertexAttribArray(4)
-        gl.glVertexAttribPointer(
-            4, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(16)
-        )
-        gl.glVertexAttribDivisor(4, 1)
-
-        gl.glEnableVertexAttribArray(5)
-        gl.glVertexAttribPointer(
-            5, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(32)
-        )
-        gl.glVertexAttribDivisor(5, 1)
-
-        gl.glEnableVertexAttribArray(6)
-        gl.glVertexAttribPointer(
-            6, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(48)
-        )
-        gl.glVertexAttribDivisor(6, 1)
-
+        # ----- Rotation VBO -----
         self.rotationVBO = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.rotationVBO)
         self._identityRotationMatrices = self.cubeMesh.getRotationMatrices(
@@ -217,28 +209,14 @@ class CubeGLWidget(QOpenGLWidget):
             gl.GL_STATIC_DRAW,
         )
 
-        gl.glEnableVertexAttribArray(7)
-        gl.glVertexAttribPointer(7, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(0))
-        gl.glVertexAttribDivisor(7, 1)
+        for i in range(4):
+            gl.glEnableVertexAttribArray(7 + i)
+            gl.glVertexAttribPointer(
+                7 + i, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(i * 16)
+            )
+            gl.glVertexAttribDivisor(7 + i, 1)
 
-        gl.glEnableVertexAttribArray(8)
-        gl.glVertexAttribPointer(
-            8, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(16)
-        )
-        gl.glVertexAttribDivisor(8, 1)
-
-        gl.glEnableVertexAttribArray(9)
-        gl.glVertexAttribPointer(
-            9, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(32)
-        )
-        gl.glVertexAttribDivisor(9, 1)
-
-        gl.glEnableVertexAttribArray(10)
-        gl.glVertexAttribPointer(
-            10, 4, gl.GL_FLOAT, gl.GL_FALSE, 64, ctypes.c_void_p(48)
-        )
-        gl.glVertexAttribDivisor(10, 1)
-
+        # ----- Color VBO -----
         self.colorVBO = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.colorVBO)
         colorData = self.cubeMesh.getColorData(self.cubeLabels)
@@ -252,14 +230,40 @@ class CubeGLWidget(QOpenGLWidget):
         )
         gl.glVertexAttribDivisor(11, 1)
 
+        # Unbind VAO
         gl.glBindVertexArray(0)
 
+        # Enable depth test
         gl.glEnable(gl.GL_DEPTH_TEST)
 
     def paintGL(self) -> None:
+        if not hasattr(self, "program"):
+            print("Program not ready!")
+            return
+
+        if not hasattr(self, "cubeVAO"):
+            print("cubeVAO not ready!")
+            return
+
+        if not hasattr(self, "meshVBO"):
+            print("meshVBO not ready!")
+            return
+
+        if not hasattr(self, "modelVBO"):
+            err = gl.glGetError()
+            if err != gl.GL_NO_ERROR:
+                print(f"OpenGL error after: {err}")
+            print("modelVBO not ready!")
+            return
+
+        if not hasattr(self, "colorVBO"):
+            print("colorVBO not ready!")
+            return
+
+        self.program.bind()
+
         gl.glClearColor(0.2, 0.2, 0.2, 1.0)
         gl.glClear(int(gl.GL_COLOR_BUFFER_BIT) | int(gl.GL_DEPTH_BUFFER_BIT))
-        gl.glUseProgram(self.program)
 
         projectionMatrix = pyrr.matrix44.create_perspective_projection(
             fovy=45, aspect=self.aspect, near=0.1, far=20, dtype=np.float32
@@ -316,6 +320,8 @@ class CubeGLWidget(QOpenGLWidget):
 
         gl.glBindVertexArray(0)
 
+        self.program.release()
+
     def resizeGL(self, w: int, h: int) -> None:
         if h == 0:
             h = 1
@@ -327,11 +333,17 @@ class CubeGLWidget(QOpenGLWidget):
         self.makeCurrent()
         try:
             self.renderTimer.stop()
-            gl.glDeleteVertexArrays(1, self.cubeVAO)
-            gl.glDeleteBuffers(1, self.meshVBO)
-            gl.glDeleteBuffers(1, self.modelVBO)
-            gl.glDeleteBuffers(1, self.colorVBO)
-            gl.glDeleteProgram(self.program)
+            if hasattr(self, "cubeVAO"):
+                gl.glDeleteVertexArrays(1, [self.cubeVAO])
+            if hasattr(self, "meshVBO"):
+                gl.glDeleteBuffers(1, [self.meshVBO])
+            if hasattr(self, "modelVBO"):
+                gl.glDeleteBuffers(1, [self.modelVBO])
+            if hasattr(self, "colorVBO"):
+                gl.glDeleteBuffers(1, [self.colorVBO])
+            if hasattr(self, "program"):
+                self.program.release()
+                self.program.removeAllShaders()
         finally:
             self.doneCurrent()
 
@@ -358,14 +370,20 @@ class CubeGLWidget(QOpenGLWidget):
     @staticmethod
     def loadProgram(
         vertex_shader_path: str, fragment_shader_path: str
-    ) -> ShaderProgram:
+    ) -> QOpenGLShaderProgram:
         vertex_shader_content = CubeGLWidget.loadShaderFile(vertex_shader_path)
         fragment_shader_content = CubeGLWidget.loadShaderFile(fragment_shader_path)
 
-        return compileProgram(
-            compileShader(vertex_shader_content, gl.GL_VERTEX_SHADER),
-            compileShader(fragment_shader_content, gl.GL_FRAGMENT_SHADER),
+        shader_program = QOpenGLShaderProgram()
+        shader_program.addShaderFromSourceCode(
+            QOpenGLShader.ShaderTypeBit.Vertex, vertex_shader_content
         )
+        shader_program.addShaderFromSourceCode(
+            QOpenGLShader.ShaderTypeBit.Fragment, fragment_shader_content
+        )
+        shader_program.link()
+
+        return shader_program
 
     @staticmethod
     def loadShaderFile(shader_path: str) -> str:
