@@ -26,12 +26,12 @@ class CubeDetectionResult:
     frame: MatLike
     edges: MatLike
     numFaceletsDetected: int
-    facelet_contours: list[MatLike]
-    facelet_contour_bb: list[Rect]
-    facelet_contour_rotated_bb: list[RotatedRect]
-    facelet_contour_rotated_bb_points: list[MatLike]
+    faceletContours: list[MatLike]
+    faceletContourBoundingBox: list[Rect]
+    faceletContourRotatedBoundingBox: list[RotatedRect]
+    faceletContourRotatedBoundingBoxPoints: list[MatLike]
     labels: list[CubeLabel]
-    mean_facelet_color: list[HSV]
+    meanFaceletColor: list[HSV]
 
 
 @dataclass

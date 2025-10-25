@@ -198,7 +198,7 @@ class CubeDetectionAppWindow(QMainWindow):
         if result.numFaceletsDetected != 9 or result.labels[4] == CubeLabel.UNLABELD:
             return
 
-        self.saveMeanColors(result.mean_facelet_color)
+        self.saveMeanColors(result.meanFaceletColor)
 
         face = CubeFace(result.labels[4].value)
         for i in range(9):

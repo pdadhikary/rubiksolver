@@ -97,7 +97,7 @@ class PlanarCubeVisualizer:
     def highlight(self, frame: MatLike, result: CubeDetectionResult) -> MatLike:
         cv.drawContours(
             frame,
-            result.facelet_contour_rotated_bb_points,
+            result.faceletContourRotatedBoundingBoxPoints,
             -1,
             (255, 255, 255),
             3,
@@ -105,7 +105,7 @@ class PlanarCubeVisualizer:
 
         for label, rect in zip(
             result.labels,
-            result.facelet_contour_bb,
+            result.faceletContourBoundingBox,
         ):
             text = self.labelMap[label]
             font = cv.FONT_HERSHEY_SIMPLEX
