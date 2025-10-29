@@ -1,3 +1,7 @@
+"""
+This module contains the core logic for the computer vision pipeline
+"""
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
@@ -10,6 +14,15 @@ from rubiksolver.cube import CubeLabel
 
 @dataclass
 class HSV:
+    """
+    A data encapsulation of HSV values
+
+    attributes:
+    --  hue
+    --  saturation
+    --  value
+    """
+
     hue: int
     saturation: int
     value: int
@@ -17,12 +30,40 @@ class HSV:
 
 @dataclass
 class HSV_Range:
+    """
+    A data encapsulation of a range of HSV values
+
+    attributes:
+    --  lower: lower bound of the HSV Range
+    --  upper: upper bound of the HSV Range
+    """
+
     lower: HSV
     upper: HSV
 
 
 @dataclass
 class CubeDetectionResult:
+    """
+    A data class the encapsulates data extracted from a frame
+    related to Rubik's cube facelet detection.
+
+    attributes:
+    --  frame: the image frame from which data was extracted from
+    --  edges: the Canny edge data of the frame
+    --  numFaceletsDetected: the number of Rubik's cueb facelets detected in the
+        frame
+    --  faceletContours: the contours of the detected facelets. The contours are
+        are ordered row-wise from top-right to bottom left.
+    --  faceletContourBoundingBox: the bounding boxes of detected facelets
+    --  faceletContourRotatedBoundingBox: the rotated bounding boxes of detected
+        facelets
+    --  faceletContourRotatedBoundingBoxPoints: the rotated bounding boxes of
+        detected facelets in point format
+    --  labels: the cube face label of the detected facelets
+    --  meanFaceletColor: the aggregate mean color of each detected facelet
+    """
+
     frame: MatLike
     edges: MatLike
     numFaceletsDetected: int
@@ -36,6 +77,33 @@ class CubeDetectionResult:
 
 @dataclass
 class CubeDetectionParameters:
+    """
+    An encapsulation of parameters of the Rubik's cube detection pipeline.
+
+    attributes:
+    --  denoiseDiameter: the diameter of each pixel neighbourhood of the
+        bilateral filter
+    --  denoiseSigmaSpace: filter sigma in the coordinate space of the bilateral
+        filter
+    --  denoiseSigmaColor: filter sigma in the color space of the bilateral
+        filter
+    --  cannyLowerThreshold: lower threshold of the Canny edge detection
+        hysteresis
+    --  cannyUpperThreshold: upper threshold of the Canny edge detection
+        hysteresis
+    --  faceletAreaLowerThreshold: lower threshold for the facelet size as a
+        percentage of screen space
+    --  faceletAreaUpperThreshold: upper threshold of the facelet size as a
+        percentage of screen space
+    --  faceletContourAreaRatioThreshold: lower threshold for the ratio between
+        the contour area to bounding box area.
+    --  faceletBoundingBoxAspectRatioThreshold: lower threshold for the
+        width-height ratio of the facelet. A value of 100 means width = height,
+        i.e. a perfect square
+    --  homographyRANSACMaxError: the distance error threshold when mapping the
+        detected facelets to a grid
+    """
+
     _denoiseDiameter: int = 5
     _denoiseSigmaSpace: int = 580
     _denoiseSigmaColor: int = 580
@@ -129,12 +197,30 @@ class CubeDetectionParameters:
 
 
 class ColorClassificationModel(ABC):
+    """
+    Abstract Rubik's cube facelet color classifier
+    """
+
     @abstractmethod
     def classify(self, hsv: HSV) -> CubeLabel:
+        """
+        Given an HSV value of a Rubik's cube facelet returns the corresponding
+        facelet label of the cube e.g., Up, Right, Front, etc.
+
+        parameters:
+        hsv - HSV value of a facelet
+
+        returns:
+        CubeLabel - Label of the facelet
+        """
         pass
 
 
 class FixedColorClassificationModel(ColorClassificationModel):
+    """
+    A concrete classifier that uses static HSV ranges to classify facelet color
+    """
+
     ColorLabelMap: dict[CubeLabel, HSV_Range] = {
         CubeLabel.UP: HSV_Range(HSV(0, 0, 0), HSV(180, 60, 255)),
         CubeLabel.RIGHT: HSV_Range(HSV(90, 65, 0), HSV(110, 255, 255)),
@@ -169,19 +255,36 @@ class FixedColorClassificationModel(ColorClassificationModel):
 
 
 class CubeDetectionPipeline:
+    """
+    The main Rubik's cube detection pipeline.
+
+    This class performs preprocessing, edge detection, contour
+    filtering, RANSAC grid fitting, and color labeling of detected
+    facelets in a given image frame.
+    """
+
     def __init__(
         self,
         faceletColorClassifier: ColorClassificationModel,
-        parameters: CubeDetectionParameters,
+        detectionParameters: CubeDetectionParameters,
     ):
         self.faceletColorClassifier = faceletColorClassifier
         self.frame: MatLike | None = None
-        self.parameters: CubeDetectionParameters = parameters
+        self.detectionParameters: CubeDetectionParameters = detectionParameters
 
     def forward(self, frame: MatLike) -> None:
+        """
+        Set the image frame on which to perform facelet detection.
+        """
         self.frame = frame
 
     def result(self) -> CubeDetectionResult:
+        """
+        Executes the full pipeline: preprocessing → edge detection →
+        contour extraction → RANSAC filtering → color labeling.
+        Returns a CubeDetectionResult with all extracted information.
+        """
+
         if self.frame is None:
             raise RuntimeError(
                 "Need to set frame before calling result(). "
@@ -218,20 +321,26 @@ class CubeDetectionPipeline:
         )
 
     def preprocessFrame(self, frame: MatLike) -> MatLike:
+        """
+        Convert frame to grayscale and apply noise reduction.
+        """
         frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         frame_denoise = cv.bilateralFilter(
             frame_gray,
-            d=self.parameters.denoiseDiameter,
-            sigmaSpace=self.parameters.denoiseSigmaSpace,
-            sigmaColor=self.parameters.denoiseSigmaColor,
+            d=self.detectionParameters.denoiseDiameter,
+            sigmaSpace=self.detectionParameters.denoiseSigmaSpace,
+            sigmaColor=self.detectionParameters.denoiseSigmaColor,
         )
         return frame_denoise
 
     def getCannyEdges(self, frame: MatLike) -> MatLike:
+        """
+        Perform edge detection.
+        """
         edges = cv.Canny(
             frame,
-            threshold1=self.parameters.cannyLowerThreshold,
-            threshold2=self.parameters.cannyUpperThreshold,
+            threshold1=self.detectionParameters.cannyLowerThreshold,
+            threshold2=self.detectionParameters.cannyUpperThreshold,
         )
         edges_dialated = cv.dilate(
             edges, cv.getStructuringElement(cv.MORPH_RECT, (2, 2)), iterations=3
@@ -239,16 +348,24 @@ class CubeDetectionPipeline:
         return edges_dialated
 
     def findCandidateFacelets(self, edges: MatLike) -> list[MatLike]:
+        """
+        Identify potential Rubik's cube facelets from edge contours
+        using geometric and area-based criteria.
+        """
         contours, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
         total_area = edges.shape[0] * edges.shape[1]
 
         def facelet_criteria(cont: MatLike) -> RotatedRect | None:
+            """
+            Evaluate whether a given contour meets the expected
+            geometric constraints for a cube facelet.
+            """
             area = cv.contourArea(cont)
             area_norm = (area / total_area) * 100
 
             if (
-                area_norm < self.parameters.faceletAreaLowerThreshold
-                or area_norm > self.parameters.faceletAreaUpperThreshold
+                area_norm < self.detectionParameters.faceletAreaLowerThreshold
+                or area_norm > self.detectionParameters.faceletAreaUpperThreshold
             ):
                 return None
 
@@ -257,12 +374,15 @@ class CubeDetectionPipeline:
             min_bb_area = w * h
             area_ratio = area / min_bb_area
 
-            if area_ratio < self.parameters.faceletCountourAreaRatioThreshold:
+            if area_ratio < self.detectionParameters.faceletCountourAreaRatioThreshold:
                 return None
 
             aspect_ratio = min(w, h) / max(w, h)
 
-            if aspect_ratio < self.parameters.faceletBoundingAspectRatioThreshold:
+            if (
+                aspect_ratio
+                < self.detectionParameters.faceletBoundingAspectRatioThreshold
+            ):
                 return None
 
             return rect
@@ -284,6 +404,10 @@ class CubeDetectionPipeline:
         return list(candidates)
 
     def faceletCandidateRANSAC(self, candidates: list[MatLike]) -> list[MatLike]:
+        """
+        Apply RANSAC to fit detected facelet centroids into a
+        3x3 grid pattern consistent with a cube face layout.
+        """
         if len(candidates) <= 4:
             return candidates
 
@@ -317,7 +441,7 @@ class CubeDetectionPipeline:
             inliers = [
                 i
                 for i, e in enumerate(min_err)
-                if e < self.parameters.homographyRANSACMaxError
+                if e < self.detectionParameters.homographyRANSACMaxError
             ]
             if len(inliers) > len(best_inliers):
                 best_inliers = inliers
@@ -345,6 +469,10 @@ class CubeDetectionPipeline:
     def labelFacelets(
         self, frame: MatLike, facelets: list[MatLike]
     ) -> tuple[list[CubeLabel], list[HSV]]:
+        """
+        Compute the median HSV color for each facelet region and
+        classify it using the provided color classifier.
+        """
         frame_hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
         labels: list[CubeLabel] = []
@@ -365,6 +493,10 @@ class CubeDetectionPipeline:
         return labels, mean_colors
 
     def getFinishedFrame(self, frame: MatLike) -> MatLike:
+        """
+        Overlay a completion message on the frame after successful
+        cube scan and facelet detection.
+        """
         text = "Cube Scan Complete."
         font = cv.FONT_HERSHEY_SIMPLEX
         scale = 1
