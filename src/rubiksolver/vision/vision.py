@@ -1,3 +1,7 @@
+"""
+This module contains the core logic for the computer vision pipeline
+"""
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
@@ -10,6 +14,15 @@ from rubiksolver.cube import CubeLabel
 
 @dataclass
 class HSV:
+    """
+    A data encapsulation of HSV values
+
+    attributes:
+    --  hue
+    --  saturation
+    --  value
+    """
+
     hue: int
     saturation: int
     value: int
@@ -17,12 +30,40 @@ class HSV:
 
 @dataclass
 class HSV_Range:
+    """
+    A data encapsulation of a range of HSV values
+
+    attributes:
+    --  lower: lower bound of the HSV Range
+    --  upper: upper bound of the HSV Range
+    """
+
     lower: HSV
     upper: HSV
 
 
 @dataclass
 class CubeDetectionResult:
+    """
+    A data class the encapsulates data extracted from a frame
+    related to Rubik's cube facelet detection.
+
+    attributes:
+    --  frame: the image frame from which data was extracted from
+    --  edges: the Canny edge data of the frame
+    --  numFaceletsDetected: the number of Rubik's cueb facelets detected in the
+        frame
+    --  faceletContours: the contours of the detected facelets. The contours are
+        are ordered row-wise from top-right to bottom left.
+    --  faceletContourBoundingBox: the bounding boxes of detected facelets
+    --  faceletContourRotatedBoundingBox: the rotated bounding boxes of detected
+        facelets
+    --  faceletContourRotatedBoundingBoxPoints: the rotated bounding boxes of
+        detected facelets in point format
+    --  labels: the cube face label of the detected facelets
+    --  meanFaceletColor: the aggregate mean color of each detected facelet
+    """
+
     frame: MatLike
     edges: MatLike
     numFaceletsDetected: int
@@ -36,6 +77,33 @@ class CubeDetectionResult:
 
 @dataclass
 class CubeDetectionParameters:
+    """
+    An encapsulation of parameters of the Rubik's cube detection pipeline.
+
+    attributes:
+    --  denoiseDiameter: the diameter of each pixel neighbourhood of the
+        bilateral filter
+    --  denoiseSigmaSpace: filter sigma in the coordinate space of the bilateral
+        filter
+    --  denoiseSigmaColor: filter sigma in the color space of the bilateral
+        filter
+    --  cannyLowerThreshold: lower threshold of the Canny edge detection
+        hysteresis
+    --  cannyUpperThreshold: upper threshold of the Canny edge detection
+        hysteresis
+    --  faceletAreaLowerThreshold: lower threshold for the facelet size as a
+        percentage of screen space
+    --  faceletAreaUpperThreshold: upper threshold of the facelet size as a
+        percentage of screen space
+    --  faceletContourAreaRatioThreshold: lower threshold for the ratio between
+        the contour area to bounding box area.
+    --  faceletBoundingBoxAspectRatioThreshold: lower threshold for the
+        width-height ratio of the facelet. A value of 100 means width = height,
+        i.e. a perfect square
+    --  homographyRANSACMaxError: the distance error threshold when mapping the
+        detected facelets to a grid
+    """
+
     _denoiseDiameter: int = 5
     _denoiseSigmaSpace: int = 580
     _denoiseSigmaColor: int = 580
