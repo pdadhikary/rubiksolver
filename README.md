@@ -56,3 +56,60 @@ Once setup is complete, you can start the program with:
 ```bash
 uv run rubiksolver
 ```
+
+## Usage
+
+When scanning their Rubik's cube the user should hold up each face of the cube
+to the webcam. By convention we assume that the white face is UP and the yellow
+face is DOWN. When scanning the white face, the red face is DOWN and it should
+be UP when scanning the yellow face.
+
+Once the scan is complete press the `Play` button to animate the solution steps.
+You can also step through each of the moves using the `Previous` and `Next` buttons.
+
+### Control Panel Sliders
+
+```text
+- Denoise Filter Diameter                               Size of the denoise filter kernel.
+
+
+- Color Filter Sigma                                    The colorSigma parameter for the bilateral filter.
+
+                                                        A larger value means more smoothing of the image as pixels with more different color values
+                                                        are averaged together. A smaller value correlates to less smoothing and edges are better
+                                                        preserved.
+
+
+- Space Filter Sigma                                    The spaceSigma parameter of the bilateral filter.
+
+                                                        A larger value means more smoothing as a wider neighbourhood of pixels is considered. Whereas
+                                                        a smaller value give a more localized smoothing.
+
+
+- Canny Threshold                                       The upper and lower thershold for the Canny edge detection hysteresis step.
+
+                                                        Lower values correspond to the weaker edges present in the image and higher values represent
+                                                        more pronounced edges.
+
+
+- Facelet Area Threshold                                Size thershold of candidate facelets contours.
+
+                                                        This option can be used to eliminate erroneous contours from the background by eliminating
+                                                        contours that are either too small or too large. The size is the percentage of screen space.
+
+
+- Facelet Contour Area Ratio Threshold                  The width to height ratio of contours to consider as candidates.
+
+                                                        This value can be changed to elimate contours that are not square-ish.
+
+
+- Facelet Bounding Box Aspect Ratio Threshold           Metric for how well the contour fits/occupies the bounding box.
+
+                                                        This can be changed to allow for facelets that are not perfectly square, i.e, may have
+                                                        rounded edges or are circular.
+
+
+- RANSAC Error Threshold                                Metrix for how well the detected contours fit in a 3x3 grid.
+
+                                                        Used to filter out outlier/erroneous contours that may be present in the background.
+```
