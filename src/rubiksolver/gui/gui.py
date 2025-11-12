@@ -1,3 +1,4 @@
+from argparse import Namespace
 from os import makedirs, path
 
 import cv2 as cv
@@ -26,8 +27,9 @@ class CubeDetectionAppWindow(QMainWindow):
     PauseSignal = Signal()
     ResumeSignal = Signal()
 
-    def __init__(self):
+    def __init__(self, debug: bool):
         super().__init__()
+        self.debug = debug
         self.cube = RubiksCube()
         self.visualizer = PlanarCubeVisualizer()
         self.videoSize = QSize(752, 450)
@@ -198,7 +200,8 @@ class CubeDetectionAppWindow(QMainWindow):
         if result.numFaceletsDetected != 9 or result.labels[4] == CubeLabel.UNLABELD:
             return
 
-        self.saveMeanColors(result.meanFaceletColor)
+        if self.debug:
+            self.saveMeanColors(result.meanFaceletColor)
 
         face = CubeFace(result.labels[4].value)
         for i in range(9):
