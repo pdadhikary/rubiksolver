@@ -222,7 +222,7 @@ class RubiksCube:
 
     def isComplete(self) -> bool:
         try:
-            if CubeLabel.UNLABELD not in self.state:
+            if CubeLabel.UNLABELD not in self.state and self.solution is None:
                 solution = kociemba.solve(str(self))
                 if isinstance(solution, str):
                     print(solution)
