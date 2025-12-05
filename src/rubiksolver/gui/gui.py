@@ -1,4 +1,3 @@
-from argparse import Namespace
 from os import makedirs, path
 
 import cv2 as cv
